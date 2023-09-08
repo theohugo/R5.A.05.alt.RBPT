@@ -1,23 +1,25 @@
-from action import *
 from random import randint
+from action import *
 
 class CharacterProxy:
-    def __init__(self, name :str, life :int, strength :int, armor :int, speed :int):
-        self._name = name
+    def __init__(self, cid :str, teamid :str, life :int, strength :int, armor :int, speed :int):
+        self._id = cid
+        self._teamid = teamid
+        #self._name = name
         self._life = life
         self._strength = strength
         self._armor = armor
         self._speed = speed
         self._action = None
         self._target = None
-        self._id = self._name + str(randint(0, 1000))
+        #self._id = self._name + str(randint(0, 1000))
         self._dead = False
 
     def isDead(self):
         return self._dead
 
-    def isId(self, id):
-        return self._id == id
+    def isId(self, cid):
+        return self._id == cid
 
     def getId(self):
         return self._id
@@ -61,7 +63,23 @@ class CharacterProxy:
 
     def __str__(self):
         s = "------------\n"
-        s += "name : " + self._name + "\n"
+        s += "cid : " + self._id + ",\n"
         s += "life : " + str(self._life) + "\n"
+        s += "strength : " + str(self._strength) + "\n"
+        s += "armor : " + str(self._armor) + "\n"
+        s += "speed : " + str(self._speed) + "\n"
         s += "------------\n"
         return s
+
+    def toDict(self):
+        cDict = {}
+        cDict["cid"] = self._id
+        cDict["teamid"] = self._teamid
+        cDict["life"] = self._life
+        cDict["strength"] = self._strength
+        cDict["armor"] = self._armor
+        cDict["speed"] = self._speed
+        cDict["action"] = actionToStr(self._action)
+        cDict["target"] = str(self._target)
+        cDict["dead"] = self._dead
+        return cDict
