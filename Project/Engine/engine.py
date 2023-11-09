@@ -135,5 +135,7 @@ class Engine:
     
     # get an observation of the arena that will be sent to every agents
     def getState(self):
-        return json.dumps(self._arena.toDict())
+        arena_data = self._arena.toDict()
+        arena_data["round"] = self._turnId
+        return json.dumps(arena_data)
             
