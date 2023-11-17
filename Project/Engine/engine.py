@@ -15,6 +15,7 @@ class Engine:
         self._arena = Arena(self._data)
         self._run = False
         self._goldBook = {}
+        self._ipMap = {}
         #### parameters ####
         self._minPlayersToStart = minPlayersToStart
         self._characterTimeout = characterTimeout
@@ -28,13 +29,19 @@ class Engine:
     def getPlayerByName(self, cid):
         return self._arena.getPlayerByName(cid)
 
-    def addPlayer(self, character):
+    def addPlayer(self, character, ip):
         self._arena.addPlayer(character)
         cId = character.getId()
+        self._ipMap[cId] = ip
         if not cId in self._goldBook:
             self._goldBook[cId] = 0
         self._data.addData("enter_arena", character.toDict())
         self._data.addData("gold", {cId : self._goldBook[cId]})
+
+    def getIP(self, cid):
+        if cid in self._ipMap:
+            return self._ipMap[cid]
+        return None  
 
     def isReadyToStart(self):
         flag = self._arena.getActiveNbPlayer() >= self._minPlayersToStart
