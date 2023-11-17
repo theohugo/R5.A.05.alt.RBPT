@@ -87,7 +87,7 @@ class Engine:
                         statistics["damage"] = 0
                         statistics["reduced"] = 0
                         statistics["dodged"] = 0
-                        if tSpeed <= r:
+                        if tSpeed > r:
                             target.setLife(tLife - cStrength)
                             statistics["damage"] = abs(tArmor - cStrength)
                         else:
