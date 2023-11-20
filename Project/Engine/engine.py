@@ -11,7 +11,10 @@ import json
 class Engine:
     def __init__(self, minPlayersToStart :int = 2, characterTimeout :int = 5):
         self._turnId = 0
+        # data about the game
         self._data = Data()
+        # state of the arena and characters' characteristics at each round
+        self._history = {}
         self._arena = Arena(self._data)
         self._run = False
         self._goldBook = {}
@@ -144,5 +147,9 @@ class Engine:
     def getState(self):
         arena_data = self._arena.toDict()
         arena_data["round"] = self._turnId
+        self._history[self._turnId] = arena_data
         return json.dumps(arena_data)
+
+    def getStates(self):
+        return json.dumps(self._history)
             

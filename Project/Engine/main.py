@@ -1,4 +1,6 @@
 from flask import Flask
+import sys
+sys.path.append('../Engine/')
 from character import *
 from engine import *
 import threading
