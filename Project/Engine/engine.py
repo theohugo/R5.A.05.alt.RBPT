@@ -63,6 +63,8 @@ class Engine:
     def single_run(self):
         # execution of each character's action
         leavers = []
+        # sort the players by speed
+        self._arena._playersList.sort(key=lambda x: x.getSpeed(), reverse=True)
         for i in range(self._arena.getTotalNbPlayer()):
             # process damage
             character = self._arena.getPlayerByIndex(i)
@@ -79,22 +81,25 @@ class Engine:
                     cStrength = character.getStrength()
                     tAction, _ = target.getAction()
                     if tAction == ACTION.BLOCK:
-                        target.setLife(tLife - abs(tArmor - cStrength))
-                        statistics["damage"] = abs(tArmor - cStrength)
-                        statistics["reduced"] = tArmor
+                        # We use a logarithmic function to compute the reduced damages
+                        reducedDamages = (1-(tArmor/(tArmor+8))) * cStrength
+                        target.setLife(tLife - reducedDamages)
+                        statistics["damage"] = reducedDamages
+                        statistics["reduced"] = cStrength - reducedDamages
                         statistics["dodged"] = 0
 
                     elif tAction == ACTION.DODGE:
-                        r = randint(1, 10)
+                        # There is a speed/25 chance to dodge an attack (means that there is 80% dodge chance at 20 speed)
                         tSpeed = target.getSpeed()
+                        r = randint(0, 25)
                         statistics["damage"] = 0
                         statistics["reduced"] = 0
                         statistics["dodged"] = 0
-                        if tSpeed > r:
-                            target.setLife(tLife - cStrength)
-                            statistics["damage"] = abs(tArmor - cStrength)
+                        if r <= tSpeed:
+                            statistics["dodged"] = cStrength
                         else:
-                           statistics["dodged"] = min(cStrength, character.getLife())
+                            target.setLife(tLife - cStrength)
+                            statistics["damage"] = cStrength
 
                     else:
                         target.setLife(tLife - cStrength)
