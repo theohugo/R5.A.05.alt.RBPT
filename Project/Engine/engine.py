@@ -89,7 +89,7 @@ class Engine:
                         statistics["dodged"] = 0
 
                     elif tAction == ACTION.DODGE:
-                        r = randint(1, 10)
+                        r = randint(1, 20)
                         tSpeed = target.getSpeed()
                         statistics["damage"] = 0
                         statistics["reduced"] = 0
