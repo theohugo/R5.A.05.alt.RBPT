@@ -79,13 +79,17 @@ class Engine:
                     cStrength = character.getStrength()
                     tAction, _ = target.getAction()
                     if tAction == ACTION.BLOCK:
-                        target.setLife(tLife - abs(tArmor - cStrength))
-                        statistics["damage"] = abs(tArmor - cStrength)
+                        if tArmor < cStrength:
+                            target.setLife(tLife - abs(tArmor - cStrength))
+                            statistics["damage"] = abs(tArmor - cStrength)
+                        else:
+                            target.setArmor(tArmor - 1)
+                            statistics["damage"] = 0
                         statistics["reduced"] = tArmor
                         statistics["dodged"] = 0
 
                     elif tAction == ACTION.DODGE:
-                        r = randint(1, 10)
+                        r = randint(1, 20)
                         tSpeed = target.getSpeed()
                         statistics["damage"] = 0
                         statistics["reduced"] = 0
