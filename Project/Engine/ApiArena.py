@@ -72,6 +72,8 @@ def action_character(character_id,action_id,target_id):
     else:
         return jsonify({"error": "Action non trouvée"}), 404
 
+# ---------------------------------- Routes Eleves ----------------------------------
+
 # POST - /character/action/switcharena/<character_id>/<arena_id>
 @app.route('/character/action/switcharena/<character_id>/<arena_id>', methods=['POST'])
 def switch_arena(character_id, arena_id):
