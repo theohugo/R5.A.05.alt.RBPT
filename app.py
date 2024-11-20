@@ -3,7 +3,8 @@ from flask import Flask, jsonify, request
 app = Flask(__name__)
 
 arena_networks = {
-    1, 2
+    1: {"arena_network": "192.168.10.1"},
+    2: {"arena_network": "192.168.10.2"}
 }
 
 characters = [
