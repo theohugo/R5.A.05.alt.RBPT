@@ -69,6 +69,8 @@
 
 - **RAGUIN Hugo**
 - **BABEL Mickael**
+- **TREHOU Nicolas**
+- **PHAM HUYNH Tuong Vy**
 
 ## Ressources
 
