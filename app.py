@@ -127,13 +127,7 @@ def switch_arena(character_id, arena_id):
         return jsonify({"error": "Erreur lors du transfert de personnage."}), 500
 
 def select_new_arena(arena_id):
-    arenas = {
-        '1': "arena1-address",
-        '2': "arena2-address",
-        '3': "arena3-address",
-        '4': "arena4-address"
-    }
-    return arenas.get(arena_id, "default-arena-address")
+    return arena_networks[arena_id]['arena_network']
 
 def send_to_arena(url, character_data):
     conn = http.client.HTTPSConnection(url)

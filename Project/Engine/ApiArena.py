@@ -72,45 +72,6 @@ def action_character(character_id,action_id,target_id):
     else:
         return jsonify({"error": "Action non trouvée"}), 404
 
-# ---------------------------------- Routes Eleves ----------------------------------
-
-# POST - /character/action/switcharena/<character_id>/<arena_id>
-@app.route('/character/action/switcharena/<character_id>/<arena_id>', methods=['POST'])
-def switch_arena(character_id, arena_id):
-    
-    character_data = get_character(character_id) 
-    if 'error' in character_data:
-        return jsonify(character_data), 404
-    
-    new_arena_url = select_new_arena(arena_id) 
-    
-    response = send_to_arena(new_arena_url, character_data)
-    
-    if response.status == 200:
-        return jsonify({
-            "message": "Personnage transféré avec succès.",
-            "new_arena_url": new_arena_url
-        }), 200
-    else:
-        return jsonify({"error": "Erreur lors du transfert de personnage."}), 500
-
-def select_new_arena(arena_id):
-    arenas = {
-        '1': "arena1-address",
-        '2': "arena2-address",
-        '3': "arena3-address",
-        '4': "arena4-address"
-    }
-    return arenas.get(arena_id, "default-arena-address")
-
-def send_to_arena(url, character_data):
-    conn = http.client.HTTPSConnection(url)
-    headers = {'Content-Type': 'application/json'}
-    json_data = json.dumps(character_data)
-    conn.request("POST", "/character/join", body=json_data, headers=headers)
-    return conn.getresponse()
-
-
 # Démarrer le serveur
 if __name__ == '__main__':
     engine = Engine()
