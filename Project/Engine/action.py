@@ -1,6 +1,7 @@
 from enum import Enum
 
 class ACTION(Enum):
+    """ACTIONS"""
     HIT = 0
     BLOCK = 1
     DODGE = 2
