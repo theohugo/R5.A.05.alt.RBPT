@@ -2,7 +2,7 @@ from random import randint
 from Project.Engine.action import *
 
 class CharacterProxy:
-    def __init__(self, cid :str, teamid :str, life :int, strength :int, armor :int, speed :int):
+    def __init__(self, cid :str, teamid :str, life :int, strength :int, armor :int, speed :int, arena_id :int):
         self._id = cid
         self._teamid = teamid
         #self._name = name
@@ -10,6 +10,7 @@ class CharacterProxy:
         self._strength = strength
         self._armor = armor
         self._speed = speed
+        self.arena_id = arena_id
         self._action = None
         self._target = None
         #self._id = self._name + str(randint(0, 1000))
@@ -35,6 +36,9 @@ class CharacterProxy:
 
     def getSpeed(self):
         return self._speed
+    
+    def getArenaId(self):
+        return self.arena_id
 
     def getAction(self):
         if self._action == ACTION.HIT or self._action == ACTION.FLY:
@@ -60,6 +64,9 @@ class CharacterProxy:
     
     def setTarget(self, value):
         self._target = value
+        
+    def setArenaId(self, value):
+        self.arena_id = value
 
     def __str__(self):
         s = "------------\n"
@@ -68,6 +75,7 @@ class CharacterProxy:
         s += "strength : " + str(self._strength) + "\n"
         s += "armor : " + str(self._armor) + "\n"
         s += "speed : " + str(self._speed) + "\n"
+        s += "arena : " + str(self.arena_id) + "\n"
         s += "------------\n"
         return s
 
@@ -82,4 +90,5 @@ class CharacterProxy:
         cDict["action"] = actionToStr(self._action)
         cDict["target"] = str(self._target)
         cDict["dead"] = self._dead
+        cDict["arena_id"] = self.arena_id
         return cDict

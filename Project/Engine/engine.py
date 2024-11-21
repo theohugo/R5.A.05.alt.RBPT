@@ -9,7 +9,7 @@ import json
 
 
 class Engine:
-    def __init__(self, minPlayersToStart :int = 2, characterTimeout :int = 5):
+    def __init__(self, minPlayersToStart :int = 2, characterTimeout :int = 100):
         self._turnId = 0
         # data about the game
         self._data = Data()
