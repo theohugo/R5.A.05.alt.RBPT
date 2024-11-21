@@ -36,7 +36,14 @@
 
    ```bash
    git clone https://github.com/theohugo/R5.A.05.alt.RBPT.git
-   cd R5.A.05.alt.RBPT/Project
+   cd R5.A.05.alt.RBPT/
+   python -m http.server 8000
+   cd Project/
+   ```
+
+   Pour accèer au visuel depuis le serveur 
+   ```
+   http://localhost:8000/visual_server.html
    ```
 
 2. Installez les dépendances :
