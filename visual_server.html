@@ -214,7 +214,9 @@
         function initializeCharacters(gameData) {
             gameData.enter_arena.forEach(event => {
                 const [timestamp, data] = event;
-                characters[data.cid] = { ...data };
+                if (!characters[data.cid]) { // Éviter les doublons
+                    characters[data.cid] = { ...data };
+                }
             });
         }
 
@@ -361,7 +363,21 @@
         function displayActionLog(gameData) {
             const logContainer = document.getElementById('action-log');
 
-            // Vider le journal avant de le reconstruire
+            // Étape 1 : Identifier les tours actuellement ouverts
+            const openTurns = new Set();
+            document.querySelectorAll('.log-entry').forEach(entry => {
+                const button = entry.querySelector('.turn-button');
+                const details = entry.querySelector('.turn-details');
+                if (details.style.display === 'block') {
+                    const turnNumberMatch = button.textContent.match(/Tour (\d+)/);
+                    if (turnNumberMatch) {
+                        const turnNumber = parseInt(turnNumberMatch[1], 10);
+                        openTurns.add(turnNumber);
+                    }
+                }
+            });
+
+            // Étape 2 : Vider le journal avant de le reconstruire
             logContainer.innerHTML = '';
 
             // Initialiser les tours à partir de turn_id
@@ -491,6 +507,11 @@
 
                 // Ajouter l'entrée au journal
                 logContainer.appendChild(entryDiv);
+
+                // Étape 3 : Réouvrir les détails si le tour était ouvert précédemment
+                if (openTurns.has(turn.turnNumber)) {
+                    detailsDiv.style.display = 'block';
+                }
             });
 
             // Optionnel : Faire défiler vers le haut automatiquement
@@ -498,16 +519,16 @@
         }
 
         // Fonction principale pour initialiser et afficher les données
-        async function main() {
+        async function fetchDataAndUpdate() {
             try {
                 // Charger les données depuis data.json
-                const response = await fetch('data.json');
+                const response = await fetch(`data.json?t=${new Date().getTime()}`); // Ajout d'un timestamp pour éviter le cache
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 const gameData = await response.json();
 
-                // Initialiser les personnages
+                // Initialiser les personnages (uniquement la première fois)
                 initializeCharacters(gameData);
 
                 // Mettre à jour les personnages avec les actions, cibles et dégâts
@@ -523,8 +544,17 @@
             }
         }
 
-        // Appeler la fonction principale après le chargement de la page
-        window.onload = main;
+        // Fonction pour démarrer le rafraîchissement périodique des données
+        function startAutoRefresh() {
+            // Appeler immédiatement pour ne pas attendre la première seconde
+            fetchDataAndUpdate();
+
+            // Rafraîchir toutes les secondes (1000 ms)
+            setInterval(fetchDataAndUpdate, 1000);
+        }
+
+        // Appeler la fonction de démarrage après le chargement de la page
+        window.onload = startAutoRefresh;
     </script>
 
 </body>
