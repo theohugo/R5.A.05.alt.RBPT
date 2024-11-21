@@ -1,8 +1,8 @@
 from random import randint
-from character import *
+from Project.Engine.character import *
 from Project.Engine.action import *
-from arena import *
-from data import *
+from Project.Engine.arena import *
+from Project.Engine.data import *
 import time
 import json
 

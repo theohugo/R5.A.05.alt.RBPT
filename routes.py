@@ -1,12 +1,13 @@
-
 import time, json
-from http import *
 import http.client
 from Project.Engine.data import *
 from Project.Engine.arena import *
 from Project.Engine.character import *
-from app import app
-from flask import Flask, jsonify, request
+from flask import current_app, jsonify, request, Blueprint
+import uuid
+
+# Créer un Blueprint pour enregistrer les routes dans app.py
+routes_blueprint = Blueprint('routes', __name__)
 
 arena_networks = {
     1: {"arena_network": "192.168.10.1"},
@@ -48,32 +49,35 @@ matches = [
     {"id": 2, "title": "Build an API", "done": False}
 ]
 
-@app.get('/')
+# GET - dire bonjour
+@routes_blueprint.route('/', methods=['GET'])
 def say_hello():
     return {'message': 'Hello!'}
 
 # GET - récupérer les personnages d'une arène - /characters/
-@app.route('/characters/', methods=['GET'])
+@routes_blueprint.route('/characters/', methods=['GET'])
 def get_characters():
+    # Utilisez l'engine depuis le contexte de l'application Flask
+    engine = current_app.engine
     arena = engine._arena
     characters = arena._playersList
-    return jsonify({"characters" : characters}), 200
+    return jsonify({"characters": [char.toDict() for char in characters]}), 200
 
 # GET - récupérer les résultats des matchs /status/ - numéro de tour
-@app.route('/status/', methods=['GET'])
+@routes_blueprint.route('/status/', methods=['GET'])
 def get_matches():
     return jsonify({"matches": matches})
 
 # GET - récupérer un personnage - /character/<cid>
-@app.route('/character/<int:cid>', methods=['GET'])
+@routes_blueprint.route('/character/<int:cid>', methods=['GET'])
 def get_character(cid):
     character = next((character for character in characters if character["cid"] == cid), None)
     if character is None:
         return jsonify({"error": "character not found"}), 404
     return jsonify(character)
 
-# POST - ajouter un personnage à une arène - /character/join/
-@app.route('/character/join/', methods=['POST'])
+# POST - ajouter un personnage à une arène - /character/join/ - cid, teamid, life, strength, armor, speed
+@routes_blueprint.route('/character/join/', methods=['POST'])
 def create_character():
     if not request.json or "arena_id" not in request.json:
         return jsonify({"error": "Bad Request"}), 400
@@ -82,24 +86,20 @@ def create_character():
     if arena_id not in arena_networks:
         return jsonify({"error": "Invalid Arena ID"}), 400
 
-    # Générer un cid unique
-    new_cid = max([char["cid"] for char in characters], default=0) + 1
+    character = CharacterProxy(
+        cid=str(uuid.uuid4()),
+        teamid=request.json["team_id"],
+        life=request.json["life"],
+        strength=request.json["strength"],
+        armor=request.json["armor"],
+        speed=request.json["speed"]
+    )
+    print('Character created: ', character)
 
-    new_character = {
-        "cid": new_cid,
-        "team_id": request.json["team_id"],
-        "arena_id": request.json["arena_id"],
-        "life": request.json["life"],
-        "strength": request.json["strength"],
-        "armor": request.json["armor"],
-        "speed": request.json["speed"]
-    }
-
-    characters.append(new_character)
-    return jsonify(new_character), 201
+    return jsonify(character.toDict()), 201
 
 # PUT - mettre à jour un personnage - /character/<cid>
-@app.route('/character/<int:cid>', methods=['PUT'])
+@routes_blueprint.route('/character/<int:cid>', methods=['PUT'])
 def update_character(cid):
     character = next((character for character in characters if character["cid"] == cid), None)
 
@@ -113,7 +113,7 @@ def update_character(cid):
     return jsonify(character)
 
 # DELETE - supprimer un personnage - /character/<cid>
-@app.route('/character/<int:cid>', methods=['DELETE'])
+@routes_blueprint.route('/character/<int:cid>', methods=['DELETE'])
 def delete_character(cid):
     global characters
     character = next((character for character in characters if character["cid"] == cid), None)
@@ -123,7 +123,7 @@ def delete_character(cid):
     return jsonify({"message": f"Character with cid {cid} has been deleted."}), 200
 
 # POST - /character/action/switcharena/<character_id>/<arena_id>
-@app.route('/character/action/switcharena/<int:character_id>/<int:arena_id>', methods=['POST'])
+@routes_blueprint.route('/character/action/switcharena/<int:character_id>/<int:arena_id>', methods=['POST'])
 def switch_arena(character_id, arena_id):
     character_response = get_character(character_id)
     character_data = character_response.get_json()
@@ -140,7 +140,7 @@ def switch_arena(character_id, arena_id):
         }), 200
     else:
         return jsonify({"error": "Erreur lors du transfert de personnage."}), 500
-    
+
 def select_new_arena(arena_id):
     return arena_networks[arena_id]['arena_network']
 
