@@ -67,25 +67,12 @@ def get_matches():
     return jsonify({"matches": matches})
 
 # GET - récupérer un personnage - /character/<cid>
-@routes_blueprint.route('/character/<string:cid>', methods=['GET'])
-def get_character(cid):
-    
-    arena = current_app.engine._arena
-    characters = arena._playersList
-    for character in characters:
-        if character.isId(cid):
-            return jsonify({"Character": character.toDict()}), 200
-    return jsonify({"error": "Personnage non trouvé"}), 404
-    
-# POST - ajouter un personnage à une arène - /character/join/ - cid, teamid, life, strength, armor, speed
 @routes_blueprint.route('/character/join/', methods=['POST'])
 def create_character():
     if not request.json or "arena_id" not in request.json:
         return jsonify({"error": "Bad Request"}), 400
 
     arena_id = int(request.json["arena_id"])
-    print('arena_id (converted to int): ', arena_id)
-    print('arena_networks: ', arena_networks)
 
     if arena_id not in arena_networks:
         return jsonify({"error": "Invalid Arena ID"}), 400
@@ -102,10 +89,7 @@ def create_character():
         speed=request.json["speed"],
         arena_id=arena_id
     )
-    current_app.engine._arena.addPlayer(character)
-    
-    print('Character created: ', character)
-
+    current_app.engine.addPlayer(character, "my_ip")
     return jsonify(character.toDict()), 201
 
 # PUT - mettre à jour un personnage - /character/<cid>
