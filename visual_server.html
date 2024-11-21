@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Visualisation du Jeu</title>
     <style>
-        /* Votre CSS existant */
+        /* Styles existants */
         body {
             font-family: Arial, sans-serif;
             background-color: #f0f0f0;
@@ -112,6 +112,45 @@
             border-bottom: none;
         }
 
+        .turn-details {
+            margin-top: 5px;
+            padding-left: 10px;
+            border-left: 2px solid #007BFF;
+            display: none;
+        }
+
+        .turn-button {
+            background: none;
+            border: none;
+            color: #007BFF;
+            cursor: pointer;
+            padding: 0;
+            font-size: 1em;
+            text-align: left;
+            width: 100%;
+        }
+
+        .turn-button:hover {
+            text-decoration: underline;
+        }
+
+        /* Styles pour les listes en mode flèche */
+        .action-list, .target-list, .damage-list {
+            list-style-type: none;
+            padding-left: 0;
+            margin: 5px 0;
+        }
+
+        .action-list li, .target-list li, .damage-list li {
+            margin: 3px 0;
+        }
+
+        .arrow {
+            display: inline-block;
+            margin: 0 5px;
+            color: #007BFF;
+        }
+
         /* Responsive Design */
         @media (max-width: 1024px) {
             .team {
@@ -152,6 +191,24 @@
 
         // Paramètres de vie
         const maxLife = 20; // Définir la vie maximale si nécessaire
+
+        // Fonction pour convertir la vie en couleur (vert à rouge)
+        function getHealthColor(life) {
+            const percentage = life / maxLife;
+            const hue = (percentage * 120).toString(10); // 120 (vert) à 0 (rouge)
+            return `hsl(${hue}, 100%, 50%)`;
+        }
+
+        // Fonction pour convertir l'action en texte lisible
+        function actionToString(action) {
+            const actions = {
+                "0": "Aucune",
+                "1": "Attaque",
+                "2": "Défense",
+                "None": "Aucune"
+            };
+            return actions[action] || action;
+        }
 
         // Fonction pour initialiser les personnages à partir des événements "enter_arena"
         function initializeCharacters(gameData) {
@@ -194,13 +251,6 @@
                     }
                 }
             });
-        }
-
-        // Fonction pour convertir la vie en couleur (vert à rouge)
-        function getHealthColor(life) {
-            const percentage = life / maxLife;
-            const hue = (percentage * 120).toString(10); // 120 (vert) à 0 (rouge)
-            return `hsl(${hue}, 100%, 50%)`;
         }
 
         // Fonction pour afficher les personnages dans les équipes
@@ -307,54 +357,144 @@
             }
         }
 
-        // Fonction pour convertir l'action en texte lisible
-        function actionToString(action) {
-            const actions = {
-                "0": "Aucune",
-                "1": "Attaque",
-                "2": "Défense",
-                "None": "Aucune"
-            };
-            return actions[action] || action;
-        }
-
         // Fonction pour afficher le journal des actions
         function displayActionLog(gameData) {
             const logContainer = document.getElementById('action-log');
 
-            // Vider le journal
+            // Vider le journal avant de le reconstruire
             logContainer.innerHTML = '';
 
-            // Combiner les différents logs
-            const combinedLogs = [];
+            // Initialiser les tours à partir de turn_id
+            const turns = gameData.turn_id.map(turn => ({
+                turnNumber: turn[1],
+                timestamp: turn[0],
+                actions: {}, // Actions et cibles combinées
+                damage: []
+            }));
 
-            // Ajouter les dégâts
+            // Définir les plages de temps de chaque tour
+            turns.forEach((turn, index) => {
+                turn.start = turn.timestamp;
+                turn.end = (index < turns.length - 1) ? turns[index + 1].timestamp : Infinity;
+            });
+
+            // Assigner les événements set_action aux tours
+            gameData.set_action.forEach(event => {
+                const [timestamp, data] = event;
+                const turn = turns.find(t => timestamp >= t.start && timestamp < t.end);
+                if (turn) {
+                    if (!turn.actions[data.cid]) {
+                        turn.actions[data.cid] = { action: data.action, target: data.target || 'Aucune' };
+                    } else {
+                        turn.actions[data.cid].action = data.action;
+                        turn.actions[data.cid].target = data.target || 'Aucune';
+                    }
+                }
+            });
+
+            // Assigner les événements set_target aux tours
+            gameData.set_target.forEach(event => {
+                const [timestamp, data] = event;
+                const turn = turns.find(t => timestamp >= t.start && timestamp < t.end);
+                if (turn) {
+                    if (!turn.actions[data.cid]) {
+                        turn.actions[data.cid] = { action: 'Aucune', target: data.target };
+                    } else {
+                        turn.actions[data.cid].target = data.target;
+                    }
+                }
+            });
+
+            // Assigner les événements damage aux tours
             gameData.damage.forEach(event => {
                 const [timestamp, data] = event;
-                combinedLogs.push({ timestamp, type: 'damage', data });
+                const turn = turns.find(t => timestamp >= t.start && timestamp < t.end);
+                if (turn) {
+                    turn.damage.push(data);
+                }
             });
 
-            // Ajouter les tours
-            gameData.turn_id.forEach(event => {
-                const [timestamp, data] = event;
-                combinedLogs.push({ timestamp, type: 'turn', data });
-            });
+            // Trier les tours par numéro décroissant pour afficher les plus récents en premier
+            const sortedTurns = [...turns].sort((a, b) => b.turnNumber - a.turnNumber);
 
-            // Trier les logs par timestamp
-            combinedLogs.sort((a, b) => a.timestamp - b.timestamp);
-
-            combinedLogs.forEach(entry => {
+            // Afficher chaque tour dans le journal
+            sortedTurns.forEach(turn => {
                 const entryDiv = document.createElement('div');
                 entryDiv.classList.add('log-entry');
 
-                if (entry.type === 'damage') {
-                    entryDiv.textContent = `Personnage ${entry.data.character} a infligé ${entry.data.damage} dégâts à ${entry.data.target}.`;
-                } else if (entry.type === 'turn') {
-                    entryDiv.textContent = `Tour ${entry.data}.`;
+                // Créer un bouton cliquable pour le tour
+                const turnButton = document.createElement('button');
+                turnButton.textContent = `Tour ${turn.turnNumber}`;
+                turnButton.classList.add('turn-button');
+
+                // Créer un conteneur pour les détails du tour
+                const detailsDiv = document.createElement('div');
+                detailsDiv.classList.add('turn-details');
+
+                // Créer la liste combinée des actions et cibles
+                const actionsList = document.createElement('ul');
+                actionsList.classList.add('action-list');
+
+                const actionsHeader = document.createElement('p');
+                actionsHeader.innerHTML = `<strong>Actions des Personnages :</strong>`;
+                detailsDiv.appendChild(actionsHeader);
+
+                for (const [cid, actionData] of Object.entries(turn.actions)) {
+                    const actionItem = document.createElement('li');
+                    const actionText = `${cid} -> ${actionToString(actionData.action)} -> ${actionData.target}`;
+                    actionItem.textContent = actionText;
+                    actionsList.appendChild(actionItem);
                 }
 
+                if (Object.keys(turn.actions).length > 0) {
+                    detailsDiv.appendChild(actionsList);
+                }
+
+                // Remplir la liste des dégâts
+                if (turn.damage.length > 0) {
+                    const damageHeader = document.createElement('p');
+                    damageHeader.innerHTML = `<strong>Dégâts Infligés :</strong>`;
+                    detailsDiv.appendChild(damageHeader);
+
+                    const damageList = document.createElement('ul');
+                    damageList.classList.add('damage-list');
+
+                    turn.damage.forEach(damageData => {
+                        const damageItem = document.createElement('li');
+                        const damageText = `${damageData.character} -> Infligé -> ${damageData.damage} dégâts à ${damageData.target}`;
+                        damageItem.textContent = damageText;
+                        damageList.appendChild(damageItem);
+                    });
+
+                    detailsDiv.appendChild(damageList);
+                }
+
+                // Si aucun détail n'est disponible, afficher un message
+                if (Object.keys(turn.actions).length === 0 && turn.damage.length === 0) {
+                    const noDetailsP = document.createElement('p');
+                    noDetailsP.textContent = `Aucun détail disponible pour ce tour.`;
+                    detailsDiv.appendChild(noDetailsP);
+                }
+
+                // Ajouter un événement de clic pour basculer l'affichage des détails
+                turnButton.addEventListener('click', () => {
+                    if (detailsDiv.style.display === 'none' || detailsDiv.style.display === '') {
+                        detailsDiv.style.display = 'block';
+                    } else {
+                        detailsDiv.style.display = 'none';
+                    }
+                });
+
+                // Ajouter le bouton et les détails au conteneur du tour
+                entryDiv.appendChild(turnButton);
+                entryDiv.appendChild(detailsDiv);
+
+                // Ajouter l'entrée au journal
                 logContainer.appendChild(entryDiv);
             });
+
+            // Optionnel : Faire défiler vers le haut automatiquement
+            logContainer.scrollTop = 0;
         }
 
         // Fonction principale pour initialiser et afficher les données
@@ -367,12 +507,19 @@
                 }
                 const gameData = await response.json();
 
+                // Initialiser les personnages
                 initializeCharacters(gameData);
+
+                // Mettre à jour les personnages avec les actions, cibles et dégâts
                 updateCharacters(gameData);
+
+                // Afficher les personnages dans les équipes
                 displayCharacters();
+
+                // Afficher le journal des actions
                 displayActionLog(gameData);
             } catch (error) {
-                console.error('Erreur lors du chargement des données JSON:', error);
+                console.error('Erreur lors du chargement des données :', error);
             }
         }
 
