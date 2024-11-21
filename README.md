@@ -41,7 +41,7 @@
    cd Project/
    ```
 
-   Pour accèer au visuel depuis le serveur 
+   Pour acceder au visuel depuis le serveur 
    ```
    http://localhost:8000/visual_server.html
    ```
