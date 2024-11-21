@@ -1,4 +1,4 @@
-from action import *
+from Project.Engine.action import *
 
 class Arena:
     def __init__(self, data):
