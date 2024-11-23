@@ -72,6 +72,12 @@
 
 > ⚠️ **Note** : L'API tourne en mode développement. Utilisez un serveur WSGI comme Gunicorn pour une utilisation en production.
 
+4. Lancer les tests unitaire de l'api :
+
+   ```
+   python -m unittest discover -s tests
+   ```
+
 ## Contributeurs
 
 - **RAGUIN Hugo**

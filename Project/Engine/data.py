@@ -4,7 +4,7 @@ import json
 class Data:
     def __init__(self):
         self._history = {}
-        self._filename = "data.json"
+        self._filename = r"Project\Engine\log\data.json"
 
     def addData(self, key, value):
         if not key in self._history:

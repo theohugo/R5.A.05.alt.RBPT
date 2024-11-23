@@ -13,6 +13,7 @@ def run_game():
         time.sleep(1)
     try:
         app.engine.run()
+        print('Run Game !')
     except Exception as e:
         print(str(e))
 
@@ -24,4 +25,4 @@ game_thread.start()
 app.register_blueprint(routes_blueprint)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)

@@ -14,36 +14,6 @@ arena_networks = {
     2: {"arena_network": "192.168.10.2"}
 }
 
-characters = [
-    {
-        "cid": 1,
-        "team_id": 1,
-        "arena_id": 2,
-        "life": 5,
-        "strength": 3,
-        "armor": 3,
-        "speed": 2
-    },
-    {
-        "cid": 2,
-        "team_id": 2,
-        "arena_id": 2,
-        "life": 8,
-        "strength": 23,
-        "armor": 34,
-        "speed": 25
-    },
-    {
-        "cid": 3,
-        "team_id": 1,
-        "arena_id": 2,
-        "life": 80,
-        "strength": 30,
-        "armor": 50,
-        "speed": 10
-    }
-]
-
 matches = [
     {"id": 1, "title": "Learn Flask", "done": False},
     {"id": 2, "title": "Build an API", "done": False}
@@ -63,30 +33,54 @@ def get_characters():
 
 # GET - récupérer les résultats des matchs /status/ - numéro de tour
 @routes_blueprint.route('/status/', methods=['GET'])
-def get_matches():
-    return jsonify({"matches": matches})
+def get_engine_status():
+    engine = current_app.engine
+    turn = engine._turnId  
+    active_players = engine._arena.getActiveNbPlayer()
+    return jsonify({
+        "turn": turn,
+        "active_players": active_players
+    }), 200
 
 # GET - récupérer un personnage - /character/<cid>
 @routes_blueprint.route('/character/join/', methods=['POST'])
 def create_character():
-    if not request.json or "arena_id" not in request.json:
-        return jsonify({"error": "Bad Request"}), 400
+    if not request.json:
+        return jsonify({"error": "Request body is missing"}), 400
 
-    arena_id = int(request.json["arena_id"])
+    required_fields = ["team_id", "arena_id", "life", "strength", "armor", "speed"]
+    for field in required_fields:
+        if field not in request.json:
+            return jsonify({"error": f"Missing field: {field}"}), 400
 
-    if arena_id not in arena_networks:
-        return jsonify({"error": "Invalid Arena ID"}), 400
+    try:
+        arena_id = int(request.json["arena_id"])
+        if arena_id not in arena_networks:
+            return jsonify({"error": "Invalid Arena ID"}), 400
+    except ValueError:
+        return jsonify({"error": "Arena ID must be an integer"}), 400
 
-    if(request.json['strength'] + request.json['armor'] + request.json['speed'] + request.json['life'] > 20):
-        return jsonify({"error": "Invalid Character Stats"}), 400
+    try:
+        stats = {
+            "life": int(request.json["life"]),
+            "strength": int(request.json["strength"]),
+            "armor": int(request.json["armor"]),
+            "speed": int(request.json["speed"])
+        }
+        if sum(stats.values()) > 20:
+            return jsonify({"error": "Total stats must not exceed 20"}), 400
+        if any(value < 0 for value in stats.values()):
+            return jsonify({"error": "Stats must be non-negative"}), 400
+    except ValueError:
+        return jsonify({"error": "All stats must be integers"}), 400
 
     character = CharacterProxy(
         cid=str(uuid.uuid4()),
         teamid=request.json["team_id"],
-        life=request.json["life"],
-        strength=request.json["strength"],
-        armor=request.json["armor"],
-        speed=request.json["speed"],
+        life=stats["life"],
+        strength=stats["strength"],
+        armor=stats["armor"],
+        speed=stats["speed"],
         arena_id=arena_id
     )
     current_app.engine.addPlayer(character, "my_ip")
@@ -97,7 +91,7 @@ def create_character():
 def update_character(cid):
     
     arena = current_app.engine._arena
-    character = arena._playersList
+    characters = arena._playersList
     
     for character in characters:
         if character.isId(cid):
@@ -120,7 +114,7 @@ def delete_character(cid):
 # POST - /character/action/switcharena/<character_id>/<arena_id>
 @routes_blueprint.route('/character/action/switcharena/<string:character_id>/<string:arena_id>', methods=['POST'])
 def switch_arena(character_id, arena_id):
-    character_response = get_character(character_id)
+    character_response = current_app.engine.getPlayerByName(character_id)
     character_data = character_response.get_json()
     if 'error' in character_data:
         return jsonify(character_data), 404
@@ -148,7 +142,6 @@ def action_arena(cid, action_id, target_id):
         return jsonify({"error": f"Personnage avec cid {cid} non trouvé"}), 404
     if not dataTarget:
         return jsonify({"error": f"Cible avec cid {target_id} non trouvée"}), 404
-   
     try:
         action = ACTION(action_id)  # Assure une correspondance directe avec un énumérateur
     except ValueError:

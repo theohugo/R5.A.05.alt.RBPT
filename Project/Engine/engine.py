@@ -80,6 +80,9 @@ class Engine:
                     tArmor = target.getArmor()
                     cStrength = character.getStrength()
                     tAction, _ = target.getAction()
+                    
+                    print(f"Character {character.getId()} attacking {target.getId()}")
+                    print(f"Before damage - Target Life: {tLife}")
                     if tAction == ACTION.BLOCK:
                         # We use a logarithmic function to compute the reduced damages
                         reducedDamages = (1-(tArmor/(tArmor+8))) * cStrength
@@ -87,7 +90,7 @@ class Engine:
                         statistics["damage"] = reducedDamages
                         statistics["reduced"] = cStrength - reducedDamages
                         statistics["dodged"] = 0
-
+                        print(f"Damage blocked: {reducedDamages}, New Life: {target.getLife()}")
                     elif tAction == ACTION.DODGE:
                         # There is a speed/25 chance to dodge an attack (means that there is 80% dodge chance at 20 speed)
                         tSpeed = target.getSpeed()
@@ -97,15 +100,18 @@ class Engine:
                         statistics["dodged"] = 0
                         if r <= tSpeed:
                             statistics["dodged"] = cStrength
+                            print(f"Target {target.getId()} dodged the attack!")
                         else:
                             target.setLife(tLife - cStrength)
                             statistics["damage"] = cStrength
+                            print(f"Damage taken: {cStrength}, New Life: {target.getLife()}")
 
                     else:
                         target.setLife(tLife - cStrength)
                         statistics["damage"] = cStrength
                         statistics["reduced"] = 0
                         statistics["dodged"] = 0
+                        print(f"Damage taken: {cStrength}, New Life: {target.getLife()}")
                     self._data.addData("damage", statistics)
 
                     # earn gold if the character killed someone
