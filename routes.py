@@ -168,3 +168,41 @@ def send_to_arena(url, character_data):
     json_data = json.dumps(character_data)
     conn.request("POST", "/character/join/", body=json_data, headers=headers)
     return conn.getresponse()
+
+
+@routes_blueprint.route('/ranking/individual/', methods=['GET'])
+def get_individual_ranking():
+    engine = current_app.engine
+    players = engine._arena._playersList
+
+    # Trier les joueurs par or décroissant
+    ranking = sorted(players, key=lambda x: engine._goldBook.get(x.getId(), 0), reverse=True)
+    ranking_data = [
+        {
+            "cid": char.getId(),
+            "gold": engine._goldBook.get(char.getId(), 0),
+            "team": char._teamid
+        }
+        for char in ranking
+    ]
+    return jsonify({"ranking": ranking_data}), 200
+
+@routes_blueprint.route('/ranking/team/', methods=['GET'])
+def get_team_ranking():
+    engine = current_app.engine
+    players = engine._arena._playersList
+    team_gold = {}
+
+    # Accumuler l'or pour chaque équipe
+    for char in players:
+        team_id = char._teamid
+        char_gold = engine._goldBook.get(char.getId(), 0)
+        if team_id not in team_gold:
+            team_gold[team_id] = 0
+        team_gold[team_id] += char_gold
+
+    # Trier les équipes par or total décroissant
+    ranking = sorted(team_gold.items(), key=lambda x: x[1], reverse=True)
+    ranking_data = [{"team_id": team_id, "gold": gold} for team_id, gold in ranking]
+
+    return jsonify({"ranking": ranking_data}), 200
