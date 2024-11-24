@@ -82,6 +82,10 @@ class Arena:
                     return False
         return True
 
+    def getTeams(self):
+        teams = set(character._teamid for character in self._playersList if not character.isDead())
+        return teams
+
     def toDict(self):
         d = {}
         d["arena"] = []

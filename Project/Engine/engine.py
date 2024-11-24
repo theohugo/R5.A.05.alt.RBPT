@@ -7,7 +7,7 @@ import time
 import json
 
 class Engine:
-    def __init__(self, minPlayersToStart :int = 2, characterTimeout :int = 100):
+    def __init__(self, minPlayersToStart :int = 2, characterTimeout :int = 5):
         self._turnId = 0
         # data about the game
         self._data = Data()
@@ -38,7 +38,6 @@ class Engine:
             self._goldBook[cId] = 0
         self._data.addData("enter_arena", character.toDict())
         self._data.addData("gold", {cId : self._goldBook[cId]})
-        print(f'Player {cId} added ')
 
     def getIP(self, cid):
         if cid in self._ipMap:
@@ -57,7 +56,6 @@ class Engine:
     
     def stop(self):
         self._data.addData("stop_game", "")
-        print('Game stopped !')
         self._run = False
 
     def single_run(self):
@@ -80,9 +78,6 @@ class Engine:
                     tArmor = target.getArmor()
                     cStrength = character.getStrength()
                     tAction, _ = target.getAction()
-                    
-                    print(f"Character {character.getId()} attacking {target.getId()}")
-                    print(f"Before damage - Target Life: {tLife}")
                     if tAction == ACTION.BLOCK:
                         # We use a logarithmic function to compute the reduced damages
                         reducedDamages = (1-(tArmor/(tArmor+8))) * cStrength
@@ -90,7 +85,7 @@ class Engine:
                         statistics["damage"] = reducedDamages
                         statistics["reduced"] = cStrength - reducedDamages
                         statistics["dodged"] = 0
-                        print(f"Damage blocked: {reducedDamages}, New Life: {target.getLife()}")
+
                     elif tAction == ACTION.DODGE:
                         # There is a speed/25 chance to dodge an attack (means that there is 80% dodge chance at 20 speed)
                         tSpeed = target.getSpeed()
@@ -100,25 +95,23 @@ class Engine:
                         statistics["dodged"] = 0
                         if r <= tSpeed:
                             statistics["dodged"] = cStrength
-                            print(f"Target {target.getId()} dodged the attack!")
                         else:
                             target.setLife(tLife - cStrength)
                             statistics["damage"] = cStrength
-                            print(f"Damage taken: {cStrength}, New Life: {target.getLife()}")
 
                     else:
                         target.setLife(tLife - cStrength)
                         statistics["damage"] = cStrength
                         statistics["reduced"] = 0
                         statistics["dodged"] = 0
-                        print(f"Damage taken: {cStrength}, New Life: {target.getLife()}")
                     self._data.addData("damage", statistics)
 
                     # earn gold if the character killed someone
                     if target.isDead():
                         cId = character.getId()
-                        self._data.addData("death", {"character": targetId, "killer": cId})
-                        self.updateGold(cId, 10)
+                        self._data.addData("death", {"character": targetId, "killer": character.getId()})
+                        self._goldBook[cId] += 10
+                        self._data.addData("gold", {cId : self._goldBook[cId]})
                     # update the target (actually not necessary !)
                     self._arena.updatePlayer(target)
                     
@@ -133,17 +126,8 @@ class Engine:
         self._turnId += 1
         self._data.addData("turn_id", self._turnId)
 
-    def updateGold(self, character_id, amount):
-        if character_id in self._goldBook:
-            self._goldBook[character_id] += amount
-        else:
-            self._goldBook[character_id] = amount
-        # Ajouter les nouvelles données dans l'historique
-        self._data.addData("gold", {character_id: self._goldBook[character_id]})
-
     def run(self):
         if not self._run:
-            print('Game Started !')
             self._run = True
             self._data.addData("start_game", "")
             # battleroyal, we continue the fight until there is only 1 character left

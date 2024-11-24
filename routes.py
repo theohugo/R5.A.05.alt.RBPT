@@ -133,15 +133,17 @@ def switch_arena(character_id, arena_id):
 # POST - /character/action/<cid>/<action>
 @routes_blueprint.route('/character/action/<string:cid>/<int:action_id>/<string:target_id>', methods=['POST'])
 def action_arena(cid, action_id, target_id):
-    
     arena = current_app.engine._arena
     dataCharacter = arena.getPlayerByName(id=cid)
     dataTarget = arena.getPlayerByName(id=target_id)
-    
+
     if not dataCharacter:
         return jsonify({"error": f"Personnage avec cid {cid} non trouvé"}), 404
     if not dataTarget:
         return jsonify({"error": f"Cible avec cid {target_id} non trouvée"}), 404
+    if dataTarget.isDead():
+        return jsonify({"error": f"Cible avec cid {target_id} est déjà morte"}), 400
+
     try:
         action = ACTION(action_id)  # Assure une correspondance directe avec un énumérateur
     except ValueError:
@@ -156,7 +158,7 @@ def action_arena(cid, action_id, target_id):
         "message": f"Action '{actionToStr(action)}' définie pour {cid} sur cible {target_id}.",
         "character": dataCharacter.toDict()
     }), 200
-    
+
 
 def select_new_arena(arena_id):
     return arena_networks[arena_id]['arena_network']

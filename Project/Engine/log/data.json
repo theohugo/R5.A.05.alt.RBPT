@@ -1,28 +1,14 @@
 {
     "enter_arena": [
         [
-            1732480846.6516106,
+            1732486973.9610648,
             {
-                "cid": "de0f17d5-6926-4a4e-910a-67cff02acddf",
+                "cid": "9ea26084-9c7a-4261-8185-8b1c817bff98",
                 "teamid": 1,
+                "name": "9ea26084-9c7a-4261-8185-8b1c817bff98",
                 "life": 7,
-                "strength": 6,
+                "strength": 4,
                 "armor": 3,
-                "speed": 2,
-                "action": "None",
-                "target": "None",
-                "dead": false,
-                "arena_id": 2
-            }
-        ],
-        [
-            1732480847.155447,
-            {
-                "cid": "5630c791-7b45-4e7a-a91b-dfbc853aca8f",
-                "teamid": 1,
-                "life": 6,
-                "strength": 5,
-                "armor": 4,
                 "speed": 4,
                 "action": "None",
                 "target": "None",
@@ -31,43 +17,14 @@
             }
         ],
         [
-            1732480847.6582773,
+            1732486973.9630651,
             {
-                "cid": "09fb9d2d-b48f-4805-bb96-ae66d881257a",
+                "cid": "26c7547d-4cd2-4efb-aeb5-67385769bf17",
                 "teamid": 1,
-                "life": 8,
-                "strength": 6,
-                "armor": 3,
-                "speed": 1,
-                "action": "None",
-                "target": "None",
-                "dead": false,
-                "arena_id": 2
-            }
-        ],
-        [
-            1732480848.161195,
-            {
-                "cid": "b31a52c4-54c4-443c-a3bb-85f2445d748a",
-                "teamid": 2,
-                "life": 6,
-                "strength": 4,
+                "name": "26c7547d-4cd2-4efb-aeb5-67385769bf17",
+                "life": 5,
+                "strength": 7,
                 "armor": 4,
-                "speed": 5,
-                "action": "None",
-                "target": "None",
-                "dead": false,
-                "arena_id": 2
-            }
-        ],
-        [
-            1732480848.6638546,
-            {
-                "cid": "8783fd59-67bd-46d4-bce8-4462688d4322",
-                "teamid": 2,
-                "life": 5,
-                "strength": 3,
-                "armor": 3,
                 "speed": 1,
                 "action": "None",
                 "target": "None",
@@ -76,57 +33,13 @@
             }
         ],
         [
-            1732480849.166495,
+            1732486973.9650636,
             {
-                "cid": "3348ab6c-0d76-488e-97e0-8ec1b00a0be8",
-                "teamid": 2,
+                "cid": "65a31a60-70d3-491a-ac0a-fc2ec9022c42",
+                "teamid": 1,
+                "name": "65a31a60-70d3-491a-ac0a-fc2ec9022c42",
                 "life": 6,
-                "strength": 5,
-                "armor": 2,
-                "speed": 2,
-                "action": "None",
-                "target": "None",
-                "dead": false,
-                "arena_id": 2
-            }
-        ],
-        [
-            1732480849.670107,
-            {
-                "cid": "9e2a1824-0b27-4e18-8794-f859339f0639",
-                "teamid": 3,
-                "life": 5,
-                "strength": 3,
-                "armor": 3,
-                "speed": 2,
-                "action": "None",
-                "target": "None",
-                "dead": false,
-                "arena_id": 2
-            }
-        ],
-        [
-            1732480850.1733987,
-            {
-                "cid": "81068fba-d666-48d2-a16a-cc5af54111d9",
-                "teamid": 3,
-                "life": 8,
-                "strength": 5,
-                "armor": 2,
-                "speed": 1,
-                "action": "None",
-                "target": "None",
-                "dead": false,
-                "arena_id": 2
-            }
-        ],
-        [
-            1732480850.676255,
-            {
-                "cid": "068e9bce-eb7b-495f-a257-4102ade2d508",
-                "teamid": 3,
-                "life": 5,
-                "strength": 3,
+                "strength": 7,
                 "armor": 2,
                 "speed": 3,
                 "action": "None",
@@ -136,13 +49,14 @@
             }
         ],
         [
-            1732480851.1793408,
+            1732486973.9670632,
             {
-                "cid": "dd692bf5-f593-4408-b4f4-db3cda39a3c3",
-                "teamid": 4,
-                "life": 5,
-                "strength": 4,
-                "armor": 3,
+                "cid": "8f940473-116d-4eb6-b508-a389840ce316",
+                "teamid": 2,
+                "name": "8f940473-116d-4eb6-b508-a389840ce316",
+                "life": 8,
+                "strength": 5,
+                "armor": 5,
                 "speed": 2,
                 "action": "None",
                 "target": "None",
@@ -151,11 +65,108 @@
             }
         ],
         [
-            1732480851.682473,
+            1732486973.968064,
             {
-                "cid": "1432a02e-642e-4a61-8f5a-df340a923b4d",
-                "teamid": 4,
+                "cid": "d156240d-587e-46ba-8dee-5fc60824cced",
+                "teamid": 2,
+                "name": "d156240d-587e-46ba-8dee-5fc60824cced",
+                "life": 5,
+                "strength": 5,
+                "armor": 3,
+                "speed": 3,
+                "action": "None",
+                "target": "None",
+                "dead": false,
+                "arena_id": 2
+            }
+        ],
+        [
+            1732486973.9700637,
+            {
+                "cid": "8577ec60-d25a-430a-b0eb-21a2618f770a",
+                "teamid": 2,
+                "name": "8577ec60-d25a-430a-b0eb-21a2618f770a",
                 "life": 7,
+                "strength": 3,
+                "armor": 2,
+                "speed": 5,
+                "action": "None",
+                "target": "None",
+                "dead": false,
+                "arena_id": 2
+            }
+        ],
+        [
+            1732486973.9725156,
+            {
+                "cid": "42e34553-641d-4cf9-9746-2169c74dccca",
+                "teamid": 3,
+                "name": "42e34553-641d-4cf9-9746-2169c74dccca",
+                "life": 8,
+                "strength": 5,
+                "armor": 5,
+                "speed": 1,
+                "action": "None",
+                "target": "None",
+                "dead": false,
+                "arena_id": 2
+            }
+        ],
+        [
+            1732486973.9745166,
+            {
+                "cid": "ff85a608-2424-400e-b6b8-1813276c71c9",
+                "teamid": 3,
+                "name": "ff85a608-2424-400e-b6b8-1813276c71c9",
+                "life": 7,
+                "strength": 3,
+                "armor": 4,
+                "speed": 3,
+                "action": "None",
+                "target": "None",
+                "dead": false,
+                "arena_id": 2
+            }
+        ],
+        [
+            1732486973.976517,
+            {
+                "cid": "e1f0d3ef-a0f0-465f-b6ee-cde0e061d534",
+                "teamid": 3,
+                "name": "e1f0d3ef-a0f0-465f-b6ee-cde0e061d534",
+                "life": 7,
+                "strength": 4,
+                "armor": 5,
+                "speed": 4,
+                "action": "None",
+                "target": "None",
+                "dead": false,
+                "arena_id": 2
+            }
+        ],
+        [
+            1732486973.977515,
+            {
+                "cid": "c02b931b-1b19-4b48-b1b5-9dd38dfd8595",
+                "teamid": 4,
+                "name": "c02b931b-1b19-4b48-b1b5-9dd38dfd8595",
+                "life": 8,
+                "strength": 7,
+                "armor": 2,
+                "speed": 2,
+                "action": "None",
+                "target": "None",
+                "dead": false,
+                "arena_id": 2
+            }
+        ],
+        [
+            1732486973.9795156,
+            {
+                "cid": "0346bda5-73fb-49d1-a654-cc0034094b46",
+                "teamid": 4,
+                "name": "0346bda5-73fb-49d1-a654-cc0034094b46",
+                "life": 9,
                 "strength": 6,
                 "armor": 3,
                 "speed": 1,
@@ -166,14 +177,15 @@
             }
         ],
         [
-            1732480852.1845772,
+            1732486973.980515,
             {
-                "cid": "65a7c606-dd26-44d7-aa16-17a715e659b4",
+                "cid": "a1f83730-8824-4192-b0fd-2827e37bdfe9",
                 "teamid": 4,
-                "life": 10,
-                "strength": 4,
-                "armor": 4,
-                "speed": 1,
+                "name": "a1f83730-8824-4192-b0fd-2827e37bdfe9",
+                "life": 8,
+                "strength": 6,
+                "armor": 2,
+                "speed": 2,
                 "action": "None",
                 "target": "None",
                 "dead": false,
@@ -181,12 +193,13 @@
             }
         ],
         [
-            1732480852.6878355,
+            1732486973.982819,
             {
-                "cid": "c2abb77b-f5b0-42a3-8a4a-90adbef304b3",
+                "cid": "7e8dc7bb-b9c2-4e27-a221-2e630579a210",
                 "teamid": 5,
-                "life": 5,
-                "strength": 4,
+                "name": "7e8dc7bb-b9c2-4e27-a221-2e630579a210",
+                "life": 7,
+                "strength": 3,
                 "armor": 3,
                 "speed": 4,
                 "action": "None",
@@ -196,11 +209,140 @@
             }
         ],
         [
-            1732480853.1906333,
+            1732486973.983821,
             {
-                "cid": "d06d84ab-7dbb-4b73-89a8-391888ab1633",
+                "cid": "fdd93fdb-ec36-48ee-86f9-97a9a518d895",
                 "teamid": 5,
+                "name": "fdd93fdb-ec36-48ee-86f9-97a9a518d895",
                 "life": 6,
+                "strength": 6,
+                "armor": 2,
+                "speed": 1,
+                "action": "None",
+                "target": "None",
+                "dead": false,
+                "arena_id": 2
+            }
+        ],
+        [
+            1732486973.985821,
+            {
+                "cid": "492836dd-b7cb-4696-ab88-cc231bd8173f",
+                "teamid": 5,
+                "name": "492836dd-b7cb-4696-ab88-cc231bd8173f",
+                "life": 5,
+                "strength": 4,
+                "armor": 4,
+                "speed": 4,
+                "action": "None",
+                "target": "None",
+                "dead": false,
+                "arena_id": 2
+            }
+        ],
+        [
+            1732486973.9868195,
+            {
+                "cid": "c356ca75-a75b-482e-b34e-2207ce9aec9f",
+                "teamid": 6,
+                "name": "c356ca75-a75b-482e-b34e-2207ce9aec9f",
+                "life": 8,
+                "strength": 4,
+                "armor": 5,
+                "speed": 2,
+                "action": "None",
+                "target": "None",
+                "dead": false,
+                "arena_id": 2
+            }
+        ],
+        [
+            1732486973.9888203,
+            {
+                "cid": "a10e2efc-3919-44d5-a44c-4ef270cce937",
+                "teamid": 6,
+                "name": "a10e2efc-3919-44d5-a44c-4ef270cce937",
+                "life": 9,
+                "strength": 4,
+                "armor": 2,
+                "speed": 1,
+                "action": "None",
+                "target": "None",
+                "dead": false,
+                "arena_id": 2
+            }
+        ],
+        [
+            1732486973.9903245,
+            {
+                "cid": "df49f4a6-4584-49b9-a574-6f6f53a45ecd",
+                "teamid": 6,
+                "name": "df49f4a6-4584-49b9-a574-6f6f53a45ecd",
+                "life": 9,
+                "strength": 3,
+                "armor": 4,
+                "speed": 4,
+                "action": "None",
+                "target": "None",
+                "dead": false,
+                "arena_id": 2
+            }
+        ],
+        [
+            1732486973.9923298,
+            {
+                "cid": "2a6d6a8c-7b4c-470a-91ad-119df763e7aa",
+                "teamid": 7,
+                "name": "2a6d6a8c-7b4c-470a-91ad-119df763e7aa",
+                "life": 6,
+                "strength": 3,
+                "armor": 2,
+                "speed": 5,
+                "action": "None",
+                "target": "None",
+                "dead": false,
+                "arena_id": 2
+            }
+        ],
+        [
+            1732486973.9945507,
+            {
+                "cid": "4cbaffb8-a35e-40b7-a43e-581a23d266b7",
+                "teamid": 7,
+                "name": "4cbaffb8-a35e-40b7-a43e-581a23d266b7",
+                "life": 5,
+                "strength": 3,
+                "armor": 5,
+                "speed": 3,
+                "action": "None",
+                "target": "None",
+                "dead": false,
+                "arena_id": 2
+            }
+        ],
+        [
+            1732486973.9955504,
+            {
+                "cid": "3b26a7d6-6935-4ae2-8ebe-2cec4c8952f1",
+                "teamid": 7,
+                "name": "3b26a7d6-6935-4ae2-8ebe-2cec4c8952f1",
+                "life": 5,
+                "strength": 6,
+                "armor": 3,
+                "speed": 4,
+                "action": "None",
+                "target": "None",
+                "dead": false,
+                "arena_id": 2
+            }
+        ],
+        [
+            1732486973.997552,
+            {
+                "cid": "4a4301c0-c2a4-4b25-994c-e53454d68609",
+                "teamid": 8,
+                "name": "4a4301c0-c2a4-4b25-994c-e53454d68609",
+                "life": 8,
                 "strength": 6,
                 "armor": 4,
                 "speed": 2,
@@ -211,14 +353,127 @@
             }
         ],
         [
-            1732480853.6933732,
+            1732486973.9985497,
             {
-                "cid": "5c777584-7a7c-4362-a6cf-db9944ff946a",
-                "teamid": 5,
-                "life": 9,
+                "cid": "aead4533-e4d9-4e3f-bfed-cb7a67680965",
+                "teamid": 8,
+                "name": "aead4533-e4d9-4e3f-bfed-cb7a67680965",
+                "life": 5,
+                "strength": 4,
+                "armor": 5,
+                "speed": 4,
+                "action": "None",
+                "target": "None",
+                "dead": false,
+                "arena_id": 2
+            }
+        ],
+        [
+            1732486974.0010676,
+            {
+                "cid": "deeef4a6-2631-42b4-be19-c9d71b3bc02e",
+                "teamid": 8,
+                "name": "deeef4a6-2631-42b4-be19-c9d71b3bc02e",
+                "life": 5,
+                "strength": 4,
+                "armor": 4,
+                "speed": 4,
+                "action": "None",
+                "target": "None",
+                "dead": false,
+                "arena_id": 2
+            }
+        ],
+        [
+            1732486974.0020642,
+            {
+                "cid": "09bae9e9-29fd-49e0-a946-685fd6753354",
+                "teamid": 9,
+                "name": "09bae9e9-29fd-49e0-a946-685fd6753354",
+                "life": 6,
                 "strength": 7,
                 "armor": 3,
                 "speed": 1,
+                "action": "None",
+                "target": "None",
+                "dead": false,
+                "arena_id": 2
+            }
+        ],
+        [
+            1732486974.0040631,
+            {
+                "cid": "1945e4cd-89a0-488a-bd2a-948f0c893cc8",
+                "teamid": 9,
+                "name": "1945e4cd-89a0-488a-bd2a-948f0c893cc8",
+                "life": 8,
+                "strength": 3,
+                "armor": 5,
+                "speed": 2,
+                "action": "None",
+                "target": "None",
+                "dead": false,
+                "arena_id": 2
+            }
+        ],
+        [
+            1732486974.0050683,
+            {
+                "cid": "21e479bc-f809-4d13-b0d1-4a78b3c0dc70",
+                "teamid": 9,
+                "name": "21e479bc-f809-4d13-b0d1-4a78b3c0dc70",
+                "life": 5,
+                "strength": 6,
+                "armor": 3,
+                "speed": 4,
+                "action": "None",
+                "target": "None",
+                "dead": false,
+                "arena_id": 2
+            }
+        ],
+        [
+            1732486974.0070636,
+            {
+                "cid": "208437b3-eed9-47f5-9e93-9a0ad421fb40",
+                "teamid": 10,
+                "name": "208437b3-eed9-47f5-9e93-9a0ad421fb40",
+                "life": 8,
+                "strength": 5,
+                "armor": 2,
+                "speed": 3,
+                "action": "None",
+                "target": "None",
+                "dead": false,
+                "arena_id": 2
+            }
+        ],
+        [
+            1732486974.0080647,
+            {
+                "cid": "911823c6-d287-4530-b00d-4c24de89a8a6",
+                "teamid": 10,
+                "name": "911823c6-d287-4530-b00d-4c24de89a8a6",
+                "life": 8,
+                "strength": 7,
+                "armor": 2,
+                "speed": 2,
+                "action": "None",
+                "target": "None",
+                "dead": false,
+                "arena_id": 2
+            }
+        ],
+        [
+            1732486974.010065,
+            {
+                "cid": "1a433b7e-e7b0-4018-b951-661d66093e66",
+                "teamid": 10,
+                "name": "1a433b7e-e7b0-4018-b951-661d66093e66",
+                "life": 6,
+                "strength": 3,
+                "armor": 5,
+                "speed": 2,
                 "action": "None",
                 "target": "None",
                 "dead": false,
@@ -228,458 +483,1195 @@
     ],
     "gold": [
         [
-            1732480846.6516106,
+            1732486973.9610648,
             {
-                "de0f17d5-6926-4a4e-910a-67cff02acddf": 0
+                "9ea26084-9c7a-4261-8185-8b1c817bff98": 0
             }
         ],
         [
-            1732480847.155447,
+            1732486973.9630651,
             {
-                "5630c791-7b45-4e7a-a91b-dfbc853aca8f": 0
+                "26c7547d-4cd2-4efb-aeb5-67385769bf17": 0
             }
         ],
         [
-            1732480847.6582773,
+            1732486973.9650636,
             {
-                "09fb9d2d-b48f-4805-bb96-ae66d881257a": 0
+                "65a31a60-70d3-491a-ac0a-fc2ec9022c42": 0
             }
         ],
         [
-            1732480848.161195,
+            1732486973.9670632,
             {
-                "b31a52c4-54c4-443c-a3bb-85f2445d748a": 0
+                "8f940473-116d-4eb6-b508-a389840ce316": 0
             }
         ],
         [
-            1732480848.6638546,
+            1732486973.968064,
             {
-                "8783fd59-67bd-46d4-bce8-4462688d4322": 0
+                "d156240d-587e-46ba-8dee-5fc60824cced": 0
             }
         ],
         [
-            1732480849.166495,
+            1732486973.9700637,
             {
-                "3348ab6c-0d76-488e-97e0-8ec1b00a0be8": 0
+                "8577ec60-d25a-430a-b0eb-21a2618f770a": 0
             }
         ],
         [
-            1732480849.670107,
+            1732486973.9725156,
             {
-                "9e2a1824-0b27-4e18-8794-f859339f0639": 0
+                "42e34553-641d-4cf9-9746-2169c74dccca": 0
             }
         ],
         [
-            1732480850.1733987,
+            1732486973.9745166,
             {
-                "81068fba-d666-48d2-a16a-cc5af54111d9": 0
+                "ff85a608-2424-400e-b6b8-1813276c71c9": 0
             }
         ],
         [
-            1732480850.676255,
+            1732486973.976517,
             {
-                "068e9bce-eb7b-495f-a257-4102ade2d508": 0
+                "e1f0d3ef-a0f0-465f-b6ee-cde0e061d534": 0
             }
         ],
         [
-            1732480851.1793408,
+            1732486973.977515,
             {
-                "dd692bf5-f593-4408-b4f4-db3cda39a3c3": 0
+                "c02b931b-1b19-4b48-b1b5-9dd38dfd8595": 0
             }
         ],
         [
-            1732480851.682473,
+            1732486973.9795156,
             {
-                "1432a02e-642e-4a61-8f5a-df340a923b4d": 0
+                "0346bda5-73fb-49d1-a654-cc0034094b46": 0
             }
         ],
         [
-            1732480852.1845772,
+            1732486973.980515,
             {
-                "65a7c606-dd26-44d7-aa16-17a715e659b4": 0
+                "a1f83730-8824-4192-b0fd-2827e37bdfe9": 0
             }
         ],
         [
-            1732480852.6878355,
+            1732486973.982819,
             {
-                "c2abb77b-f5b0-42a3-8a4a-90adbef304b3": 0
+                "7e8dc7bb-b9c2-4e27-a221-2e630579a210": 0
             }
         ],
         [
-            1732480853.1906333,
+            1732486973.983821,
             {
-                "d06d84ab-7dbb-4b73-89a8-391888ab1633": 0
+                "fdd93fdb-ec36-48ee-86f9-97a9a518d895": 0
             }
         ],
         [
-            1732480853.6933732,
+            1732486973.985821,
             {
-                "5c777584-7a7c-4362-a6cf-db9944ff946a": 0
+                "492836dd-b7cb-4696-ab88-cc231bd8173f": 0
             }
         ],
         [
-            1732480865.3372364,
+            1732486973.9868195,
             {
-                "3348ab6c-0d76-488e-97e0-8ec1b00a0be8": 10
+                "c356ca75-a75b-482e-b34e-2207ce9aec9f": 0
             }
         ],
         [
-            1732480865.3372364,
+            1732486973.9888203,
             {
-                "5c777584-7a7c-4362-a6cf-db9944ff946a": 10
+                "a10e2efc-3919-44d5-a44c-4ef270cce937": 0
             }
         ],
         [
-            1732480868.0262609,
+            1732486973.9903245,
             {
-                "5c777584-7a7c-4362-a6cf-db9944ff946a": 20
+                "df49f4a6-4584-49b9-a574-6f6f53a45ecd": 0
             }
         ],
         [
-            1732480870.4967928,
+            1732486973.9923298,
             {
-                "3348ab6c-0d76-488e-97e0-8ec1b00a0be8": 20
+                "2a6d6a8c-7b4c-470a-91ad-119df763e7aa": 0
+            }
+        ],
+        [
+            1732486973.9945507,
+            {
+                "4cbaffb8-a35e-40b7-a43e-581a23d266b7": 0
+            }
+        ],
+        [
+            1732486973.9955504,
+            {
+                "3b26a7d6-6935-4ae2-8ebe-2cec4c8952f1": 0
+            }
+        ],
+        [
+            1732486973.997552,
+            {
+                "4a4301c0-c2a4-4b25-994c-e53454d68609": 0
+            }
+        ],
+        [
+            1732486973.9985497,
+            {
+                "aead4533-e4d9-4e3f-bfed-cb7a67680965": 0
+            }
+        ],
+        [
+            1732486974.0010676,
+            {
+                "deeef4a6-2631-42b4-be19-c9d71b3bc02e": 0
+            }
+        ],
+        [
+            1732486974.0020642,
+            {
+                "09bae9e9-29fd-49e0-a946-685fd6753354": 0
+            }
+        ],
+        [
+            1732486974.0040631,
+            {
+                "1945e4cd-89a0-488a-bd2a-948f0c893cc8": 0
+            }
+        ],
+        [
+            1732486974.0050683,
+            {
+                "21e479bc-f809-4d13-b0d1-4a78b3c0dc70": 0
+            }
+        ],
+        [
+            1732486974.0070636,
+            {
+                "208437b3-eed9-47f5-9e93-9a0ad421fb40": 0
+            }
+        ],
+        [
+            1732486974.0080647,
+            {
+                "911823c6-d287-4530-b00d-4c24de89a8a6": 0
+            }
+        ],
+        [
+            1732486974.010065,
+            {
+                "1a433b7e-e7b0-4018-b951-661d66093e66": 0
+            }
+        ],
+        [
+            1732486974.499744,
+            {
+                "911823c6-d287-4530-b00d-4c24de89a8a6": 10
+            }
+        ],
+        [
+            1732486974.499744,
+            {
+                "fdd93fdb-ec36-48ee-86f9-97a9a518d895": 10
+            }
+        ],
+        [
+            1732486981.0069993,
+            {
+                "4cbaffb8-a35e-40b7-a43e-581a23d266b7": 10
+            }
+        ],
+        [
+            1732486981.0069993,
+            {
+                "a1f83730-8824-4192-b0fd-2827e37bdfe9": 10
+            }
+        ],
+        [
+            1732486981.0069993,
+            {
+                "911823c6-d287-4530-b00d-4c24de89a8a6": 20
+            }
+        ],
+        [
+            1732486981.0069993,
+            {
+                "26c7547d-4cd2-4efb-aeb5-67385769bf17": 10
+            }
+        ],
+        [
+            1732486984.0506785,
+            {
+                "3b26a7d6-6935-4ae2-8ebe-2cec4c8952f1": 10
+            }
+        ],
+        [
+            1732486984.0506785,
+            {
+                "c02b931b-1b19-4b48-b1b5-9dd38dfd8595": 10
+            }
+        ],
+        [
+            1732486987.324935,
+            {
+                "9ea26084-9c7a-4261-8185-8b1c817bff98": 10
+            }
+        ],
+        [
+            1732486987.324935,
+            {
+                "d156240d-587e-46ba-8dee-5fc60824cced": 10
+            }
+        ],
+        [
+            1732486987.324935,
+            {
+                "8f940473-116d-4eb6-b508-a389840ce316": 10
+            }
+        ],
+        [
+            1732486987.324935,
+            {
+                "4a4301c0-c2a4-4b25-994c-e53454d68609": 10
+            }
+        ],
+        [
+            1732486987.324935,
+            {
+                "26c7547d-4cd2-4efb-aeb5-67385769bf17": 20
+            }
+        ],
+        [
+            1732486989.9059544,
+            {
+                "deeef4a6-2631-42b4-be19-c9d71b3bc02e": 10
+            }
+        ],
+        [
+            1732486992.150672,
+            {
+                "deeef4a6-2631-42b4-be19-c9d71b3bc02e": 20
+            }
+        ],
+        [
+            1732486992.150672,
+            {
+                "c02b931b-1b19-4b48-b1b5-9dd38dfd8595": 20
+            }
+        ],
+        [
+            1732486992.150672,
+            {
+                "0346bda5-73fb-49d1-a654-cc0034094b46": 10
+            }
+        ],
+        [
+            1732486994.0585942,
+            {
+                "d156240d-587e-46ba-8dee-5fc60824cced": 20
+            }
+        ],
+        [
+            1732486994.0585942,
+            {
+                "c02b931b-1b19-4b48-b1b5-9dd38dfd8595": 30
+            }
+        ],
+        [
+            1732486994.0585942,
+            {
+                "911823c6-d287-4530-b00d-4c24de89a8a6": 30
+            }
+        ],
+        [
+            1732486995.649032,
+            {
+                "2a6d6a8c-7b4c-470a-91ad-119df763e7aa": 10
+            }
+        ],
+        [
+            1732486995.649032,
+            {
+                "deeef4a6-2631-42b4-be19-c9d71b3bc02e": 30
+            }
+        ],
+        [
+            1732486995.649032,
+            {
+                "208437b3-eed9-47f5-9e93-9a0ad421fb40": 10
+            }
+        ],
+        [
+            1732486995.649032,
+            {
+                "1945e4cd-89a0-488a-bd2a-948f0c893cc8": 10
+            }
+        ],
+        [
+            1732486996.723792,
+            {
+                "9ea26084-9c7a-4261-8185-8b1c817bff98": 20
+            }
+        ],
+        [
+            1732486996.723792,
+            {
+                "208437b3-eed9-47f5-9e93-9a0ad421fb40": 20
+            }
+        ],
+        [
+            1732486998.67626,
+            {
+                "1945e4cd-89a0-488a-bd2a-948f0c893cc8": 20
+            }
+        ],
+        [
+            1732486999.4667604,
+            {
+                "208437b3-eed9-47f5-9e93-9a0ad421fb40": 30
+            }
+        ],
+        [
+            1732487000.2308724,
+            {
+                "a10e2efc-3919-44d5-a44c-4ef270cce937": 10
             }
         ]
     ],
     "start_game": [
         [
-            1732480857.7117498,
+            1732486974.499744,
             ""
         ]
     ],
     "damage": [
         [
-            1732480857.7117498,
+            1732486974.499744,
             {
-                "character": "b31a52c4-54c4-443c-a3bb-85f2445d748a",
-                "target": "c2abb77b-f5b0-42a3-8a4a-90adbef304b3",
+                "character": "8577ec60-d25a-430a-b0eb-21a2618f770a",
+                "target": "aead4533-e4d9-4e3f-bfed-cb7a67680965",
+                "damage": 1.8461538461538463,
+                "reduced": 1.1538461538461537,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486974.499744,
+            {
+                "character": "deeef4a6-2631-42b4-be19-c9d71b3bc02e",
+                "target": "65a31a60-70d3-491a-ac0a-fc2ec9022c42",
                 "damage": 4,
                 "reduced": 0,
                 "dodged": 0
             }
         ],
         [
-            1732480857.7117498,
+            1732486974.499744,
             {
-                "character": "dd692bf5-f593-4408-b4f4-db3cda39a3c3",
-                "target": "81068fba-d666-48d2-a16a-cc5af54111d9",
-                "damage": 4,
-                "reduced": 0,
+                "character": "21e479bc-f809-4d13-b0d1-4a78b3c0dc70",
+                "target": "09bae9e9-29fd-49e0-a946-685fd6753354",
+                "damage": 4.363636363636363,
+                "reduced": 1.6363636363636367,
                 "dodged": 0
             }
         ],
         [
-            1732480861.412243,
+            1732486974.499744,
             {
-                "character": "3348ab6c-0d76-488e-97e0-8ec1b00a0be8",
-                "target": "65a7c606-dd26-44d7-aa16-17a715e659b4",
-                "damage": 5,
-                "reduced": 0,
-                "dodged": 0
-            }
-        ],
-        [
-            1732480861.412243,
-            {
-                "character": "65a7c606-dd26-44d7-aa16-17a715e659b4",
-                "target": "5630c791-7b45-4e7a-a91b-dfbc853aca8f",
-                "damage": 4,
-                "reduced": 0,
-                "dodged": 0
-            }
-        ],
-        [
-            1732480865.3372364,
-            {
-                "character": "3348ab6c-0d76-488e-97e0-8ec1b00a0be8",
-                "target": "5630c791-7b45-4e7a-a91b-dfbc853aca8f",
-                "damage": 5,
-                "reduced": 0,
-                "dodged": 0
-            }
-        ],
-        [
-            1732480865.3372364,
-            {
-                "character": "5c777584-7a7c-4362-a6cf-db9944ff946a",
-                "target": "dd692bf5-f593-4408-b4f4-db3cda39a3c3",
-                "damage": 7,
-                "reduced": 0,
-                "dodged": 0
-            }
-        ],
-        [
-            1732480868.0252602,
-            {
-                "character": "9e2a1824-0b27-4e18-8794-f859339f0639",
-                "target": "3348ab6c-0d76-488e-97e0-8ec1b00a0be8",
+                "character": "ff85a608-2424-400e-b6b8-1813276c71c9",
+                "target": "2a6d6a8c-7b4c-470a-91ad-119df763e7aa",
                 "damage": 3,
                 "reduced": 0,
                 "dodged": 0
             }
         ],
         [
-            1732480868.0262609,
+            1732486974.499744,
             {
-                "character": "5c777584-7a7c-4362-a6cf-db9944ff946a",
-                "target": "d06d84ab-7dbb-4b73-89a8-391888ab1633",
+                "character": "a1f83730-8824-4192-b0fd-2827e37bdfe9",
+                "target": "a1f83730-8824-4192-b0fd-2827e37bdfe9",
+                "damage": 6,
+                "reduced": 0,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486974.499744,
+            {
+                "character": "c356ca75-a75b-482e-b34e-2207ce9aec9f",
+                "target": "c356ca75-a75b-482e-b34e-2207ce9aec9f",
+                "damage": 4,
+                "reduced": 0,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486974.499744,
+            {
+                "character": "911823c6-d287-4530-b00d-4c24de89a8a6",
+                "target": "09bae9e9-29fd-49e0-a946-685fd6753354",
+                "damage": 5.090909090909091,
+                "reduced": 1.9090909090909092,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486974.499744,
+            {
+                "character": "1a433b7e-e7b0-4018-b951-661d66093e66",
+                "target": "208437b3-eed9-47f5-9e93-9a0ad421fb40",
+                "damage": 3,
+                "reduced": 0,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486974.499744,
+            {
+                "character": "fdd93fdb-ec36-48ee-86f9-97a9a518d895",
+                "target": "492836dd-b7cb-4696-ab88-cc231bd8173f",
+                "damage": 6,
+                "reduced": 0,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486974.499744,
+            {
+                "character": "a10e2efc-3919-44d5-a44c-4ef270cce937",
+                "target": "deeef4a6-2631-42b4-be19-c9d71b3bc02e",
+                "damage": 4,
+                "reduced": 0,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486981.0069993,
+            {
+                "character": "8577ec60-d25a-430a-b0eb-21a2618f770a",
+                "target": "ff85a608-2424-400e-b6b8-1813276c71c9",
+                "damage": 3,
+                "reduced": 0,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486981.0069993,
+            {
+                "character": "e1f0d3ef-a0f0-465f-b6ee-cde0e061d534",
+                "target": "4a4301c0-c2a4-4b25-994c-e53454d68609",
+                "damage": 2.666666666666667,
+                "reduced": 1.333333333333333,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486981.0069993,
+            {
+                "character": "7e8dc7bb-b9c2-4e27-a221-2e630579a210",
+                "target": "a10e2efc-3919-44d5-a44c-4ef270cce937",
+                "damage": 3,
+                "reduced": 0,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486981.0069993,
+            {
+                "character": "aead4533-e4d9-4e3f-bfed-cb7a67680965",
+                "target": "df49f4a6-4584-49b9-a574-6f6f53a45ecd",
+                "damage": 4,
+                "reduced": 0,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486981.0069993,
+            {
+                "character": "deeef4a6-2631-42b4-be19-c9d71b3bc02e",
+                "target": "8f940473-116d-4eb6-b508-a389840ce316",
+                "damage": 2.4615384615384617,
+                "reduced": 1.5384615384615383,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486981.0069993,
+            {
+                "character": "ff85a608-2424-400e-b6b8-1813276c71c9",
+                "target": "8f940473-116d-4eb6-b508-a389840ce316",
+                "damage": 1.8461538461538463,
+                "reduced": 1.1538461538461537,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486981.0069993,
+            {
+                "character": "4cbaffb8-a35e-40b7-a43e-581a23d266b7",
+                "target": "65a31a60-70d3-491a-ac0a-fc2ec9022c42",
+                "damage": 3,
+                "reduced": 0,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486981.0069993,
+            {
+                "character": "208437b3-eed9-47f5-9e93-9a0ad421fb40",
+                "target": "7e8dc7bb-b9c2-4e27-a221-2e630579a210",
+                "damage": 5,
+                "reduced": 0,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486981.0069993,
+            {
+                "character": "a1f83730-8824-4192-b0fd-2827e37bdfe9",
+                "target": "ff85a608-2424-400e-b6b8-1813276c71c9",
+                "damage": 6,
+                "reduced": 0,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486981.0069993,
+            {
+                "character": "911823c6-d287-4530-b00d-4c24de89a8a6",
+                "target": "fdd93fdb-ec36-48ee-86f9-97a9a518d895",
                 "damage": 7,
                 "reduced": 0,
                 "dodged": 0
             }
         ],
         [
-            1732480870.4967928,
+            1732486981.0069993,
             {
-                "character": "3348ab6c-0d76-488e-97e0-8ec1b00a0be8",
-                "target": "9e2a1824-0b27-4e18-8794-f859339f0639",
+                "character": "1a433b7e-e7b0-4018-b951-661d66093e66",
+                "target": "0346bda5-73fb-49d1-a654-cc0034094b46",
+                "damage": 2.1818181818181817,
+                "reduced": 0.8181818181818183,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486981.0069993,
+            {
+                "character": "26c7547d-4cd2-4efb-aeb5-67385769bf17",
+                "target": "df49f4a6-4584-49b9-a574-6f6f53a45ecd",
+                "damage": 7,
+                "reduced": 0,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486981.0069993,
+            {
+                "character": "42e34553-641d-4cf9-9746-2169c74dccca",
+                "target": "42e34553-641d-4cf9-9746-2169c74dccca",
                 "damage": 5,
+                "reduced": 0,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486981.0069993,
+            {
+                "character": "a10e2efc-3919-44d5-a44c-4ef270cce937",
+                "target": "a10e2efc-3919-44d5-a44c-4ef270cce937",
+                "damage": 4,
+                "reduced": 0,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486984.0506785,
+            {
+                "character": "7e8dc7bb-b9c2-4e27-a221-2e630579a210",
+                "target": "8577ec60-d25a-430a-b0eb-21a2618f770a",
+                "damage": 3,
+                "reduced": 0,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486984.0506785,
+            {
+                "character": "3b26a7d6-6935-4ae2-8ebe-2cec4c8952f1",
+                "target": "42e34553-641d-4cf9-9746-2169c74dccca",
+                "damage": 6,
+                "reduced": 0,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486984.0506785,
+            {
+                "character": "21e479bc-f809-4d13-b0d1-4a78b3c0dc70",
+                "target": "26c7547d-4cd2-4efb-aeb5-67385769bf17",
+                "damage": 4.0,
+                "reduced": 2.0,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486984.0506785,
+            {
+                "character": "208437b3-eed9-47f5-9e93-9a0ad421fb40",
+                "target": "c02b931b-1b19-4b48-b1b5-9dd38dfd8595",
+                "damage": 5,
+                "reduced": 0,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486984.0506785,
+            {
+                "character": "c02b931b-1b19-4b48-b1b5-9dd38dfd8595",
+                "target": "e1f0d3ef-a0f0-465f-b6ee-cde0e061d534",
+                "damage": 7,
+                "reduced": 0,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486987.324935,
+            {
+                "character": "9ea26084-9c7a-4261-8185-8b1c817bff98",
+                "target": "a1f83730-8824-4192-b0fd-2827e37bdfe9",
+                "damage": 3.2,
+                "reduced": 0.7999999999999998,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486987.324935,
+            {
+                "character": "3b26a7d6-6935-4ae2-8ebe-2cec4c8952f1",
+                "target": "0346bda5-73fb-49d1-a654-cc0034094b46",
+                "damage": 6,
+                "reduced": 0,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486987.324935,
+            {
+                "character": "d156240d-587e-46ba-8dee-5fc60824cced",
+                "target": "3b26a7d6-6935-4ae2-8ebe-2cec4c8952f1",
+                "damage": 5,
+                "reduced": 0,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486987.324935,
+            {
+                "character": "8f940473-116d-4eb6-b508-a389840ce316",
+                "target": "aead4533-e4d9-4e3f-bfed-cb7a67680965",
+                "damage": 5,
+                "reduced": 0,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486987.324935,
+            {
+                "character": "4a4301c0-c2a4-4b25-994c-e53454d68609",
+                "target": "7e8dc7bb-b9c2-4e27-a221-2e630579a210",
+                "damage": 6,
+                "reduced": 0,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486987.324935,
+            {
+                "character": "1945e4cd-89a0-488a-bd2a-948f0c893cc8",
+                "target": "911823c6-d287-4530-b00d-4c24de89a8a6",
+                "damage": 0,
+                "reduced": 0,
+                "dodged": 3
+            }
+        ],
+        [
+            1732486987.324935,
+            {
+                "character": "26c7547d-4cd2-4efb-aeb5-67385769bf17",
+                "target": "21e479bc-f809-4d13-b0d1-4a78b3c0dc70",
+                "damage": 7,
+                "reduced": 0,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486987.324935,
+            {
+                "character": "a10e2efc-3919-44d5-a44c-4ef270cce937",
+                "target": "9ea26084-9c7a-4261-8185-8b1c817bff98",
+                "damage": 4,
+                "reduced": 0,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486989.9059544,
+            {
+                "character": "8577ec60-d25a-430a-b0eb-21a2618f770a",
+                "target": "911823c6-d287-4530-b00d-4c24de89a8a6",
+                "damage": 3,
+                "reduced": 0,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486989.9059544,
+            {
+                "character": "9ea26084-9c7a-4261-8185-8b1c817bff98",
+                "target": "1945e4cd-89a0-488a-bd2a-948f0c893cc8",
+                "damage": 2.4615384615384617,
+                "reduced": 1.5384615384615383,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486989.9059544,
+            {
+                "character": "deeef4a6-2631-42b4-be19-c9d71b3bc02e",
+                "target": "8f940473-116d-4eb6-b508-a389840ce316",
+                "damage": 4,
+                "reduced": 0,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486989.9059544,
+            {
+                "character": "c02b931b-1b19-4b48-b1b5-9dd38dfd8595",
+                "target": "1a433b7e-e7b0-4018-b951-661d66093e66",
+                "damage": 4.307692307692308,
+                "reduced": 2.6923076923076916,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486992.150672,
+            {
+                "character": "deeef4a6-2631-42b4-be19-c9d71b3bc02e",
+                "target": "c356ca75-a75b-482e-b34e-2207ce9aec9f",
+                "damage": 4,
+                "reduced": 0,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486992.150672,
+            {
+                "character": "c02b931b-1b19-4b48-b1b5-9dd38dfd8595",
+                "target": "4cbaffb8-a35e-40b7-a43e-581a23d266b7",
+                "damage": 7,
+                "reduced": 0,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486992.150672,
+            {
+                "character": "0346bda5-73fb-49d1-a654-cc0034094b46",
+                "target": "1a433b7e-e7b0-4018-b951-661d66093e66",
+                "damage": 6,
+                "reduced": 0,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486994.0585942,
+            {
+                "character": "d156240d-587e-46ba-8dee-5fc60824cced",
+                "target": "d156240d-587e-46ba-8dee-5fc60824cced",
+                "damage": 5,
+                "reduced": 0,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486994.0585942,
+            {
+                "character": "c02b931b-1b19-4b48-b1b5-9dd38dfd8595",
+                "target": "c02b931b-1b19-4b48-b1b5-9dd38dfd8595",
+                "damage": 7,
+                "reduced": 0,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486994.0585942,
+            {
+                "character": "911823c6-d287-4530-b00d-4c24de89a8a6",
+                "target": "4a4301c0-c2a4-4b25-994c-e53454d68609",
+                "damage": 7,
+                "reduced": 0,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486995.649032,
+            {
+                "character": "8577ec60-d25a-430a-b0eb-21a2618f770a",
+                "target": "1945e4cd-89a0-488a-bd2a-948f0c893cc8",
+                "damage": 3,
+                "reduced": 0,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486995.649032,
+            {
+                "character": "2a6d6a8c-7b4c-470a-91ad-119df763e7aa",
+                "target": "2a6d6a8c-7b4c-470a-91ad-119df763e7aa",
+                "damage": 3,
+                "reduced": 0,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486995.649032,
+            {
+                "character": "deeef4a6-2631-42b4-be19-c9d71b3bc02e",
+                "target": "deeef4a6-2631-42b4-be19-c9d71b3bc02e",
+                "damage": 4,
+                "reduced": 0,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486995.649032,
+            {
+                "character": "208437b3-eed9-47f5-9e93-9a0ad421fb40",
+                "target": "911823c6-d287-4530-b00d-4c24de89a8a6",
+                "damage": 5,
+                "reduced": 0,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486995.649032,
+            {
+                "character": "1945e4cd-89a0-488a-bd2a-948f0c893cc8",
+                "target": "26c7547d-4cd2-4efb-aeb5-67385769bf17",
+                "damage": 3,
+                "reduced": 0,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486996.723792,
+            {
+                "character": "9ea26084-9c7a-4261-8185-8b1c817bff98",
+                "target": "0346bda5-73fb-49d1-a654-cc0034094b46",
+                "damage": 4,
+                "reduced": 0,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486996.723792,
+            {
+                "character": "208437b3-eed9-47f5-9e93-9a0ad421fb40",
+                "target": "8577ec60-d25a-430a-b0eb-21a2618f770a",
+                "damage": 5,
+                "reduced": 0,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486998.67626,
+            {
+                "character": "1945e4cd-89a0-488a-bd2a-948f0c893cc8",
+                "target": "9ea26084-9c7a-4261-8185-8b1c817bff98",
+                "damage": 3,
+                "reduced": 0,
+                "dodged": 0
+            }
+        ],
+        [
+            1732486999.4667604,
+            {
+                "character": "208437b3-eed9-47f5-9e93-9a0ad421fb40",
+                "target": "208437b3-eed9-47f5-9e93-9a0ad421fb40",
+                "damage": 5,
+                "reduced": 0,
+                "dodged": 0
+            }
+        ],
+        [
+            1732487000.2308724,
+            {
+                "character": "a10e2efc-3919-44d5-a44c-4ef270cce937",
+                "target": "1945e4cd-89a0-488a-bd2a-948f0c893cc8",
+                "damage": 4,
                 "reduced": 0,
                 "dodged": 0
             }
         ]
     ],
-    "leave_arena": [
+    "death": [
         [
-            1732480857.7117498,
+            1732486974.499744,
             {
-                "cid": "c2abb77b-f5b0-42a3-8a4a-90adbef304b3",
-                "teamid": 5,
-                "life": 1,
-                "strength": 4,
-                "armor": 3,
-                "speed": 4,
-                "action": "None",
-                "target": "None",
-                "dead": false,
-                "arena_id": 2
+                "character": "09bae9e9-29fd-49e0-a946-685fd6753354",
+                "killer": "911823c6-d287-4530-b00d-4c24de89a8a6"
             }
         ],
         [
-            1732480857.7117498,
+            1732486974.499744,
             {
-                "cid": "de0f17d5-6926-4a4e-910a-67cff02acddf",
-                "teamid": 1,
-                "life": 7,
-                "strength": 6,
-                "armor": 3,
-                "speed": 2,
-                "action": "None",
-                "target": "None",
-                "dead": false,
-                "arena_id": 2
+                "character": "492836dd-b7cb-4696-ab88-cc231bd8173f",
+                "killer": "fdd93fdb-ec36-48ee-86f9-97a9a518d895"
             }
         ],
         [
-            1732480857.7117498,
+            1732486981.0069993,
             {
-                "cid": "09fb9d2d-b48f-4805-bb96-ae66d881257a",
-                "teamid": 1,
-                "life": 8,
-                "strength": 6,
-                "armor": 3,
-                "speed": 1,
-                "action": "None",
-                "target": "None",
-                "dead": false,
-                "arena_id": 2
+                "character": "65a31a60-70d3-491a-ac0a-fc2ec9022c42",
+                "killer": "4cbaffb8-a35e-40b7-a43e-581a23d266b7"
             }
         ],
         [
-            1732480857.7117498,
+            1732486981.0069993,
             {
-                "cid": "8783fd59-67bd-46d4-bce8-4462688d4322",
-                "teamid": 2,
-                "life": 5,
-                "strength": 3,
-                "armor": 3,
-                "speed": 1,
-                "action": "None",
-                "target": "None",
-                "dead": false,
-                "arena_id": 2
+                "character": "ff85a608-2424-400e-b6b8-1813276c71c9",
+                "killer": "a1f83730-8824-4192-b0fd-2827e37bdfe9"
             }
         ],
         [
-            1732480861.412243,
+            1732486981.0069993,
             {
-                "cid": "b31a52c4-54c4-443c-a3bb-85f2445d748a",
-                "teamid": 2,
-                "life": 6,
-                "strength": 4,
-                "armor": 4,
-                "speed": 5,
-                "action": "None",
-                "target": "None",
-                "dead": false,
-                "arena_id": 2
+                "character": "fdd93fdb-ec36-48ee-86f9-97a9a518d895",
+                "killer": "911823c6-d287-4530-b00d-4c24de89a8a6"
             }
         ],
         [
-            1732480861.412243,
+            1732486981.0069993,
             {
-                "cid": "1432a02e-642e-4a61-8f5a-df340a923b4d",
-                "teamid": 4,
-                "life": 7,
-                "strength": 6,
-                "armor": 3,
-                "speed": 1,
-                "action": "None",
-                "target": "None",
-                "dead": false,
-                "arena_id": 2
+                "character": "df49f4a6-4584-49b9-a574-6f6f53a45ecd",
+                "killer": "26c7547d-4cd2-4efb-aeb5-67385769bf17"
             }
         ],
         [
-            1732480865.3372364,
+            1732486984.0506785,
             {
-                "cid": "81068fba-d666-48d2-a16a-cc5af54111d9",
-                "teamid": 3,
-                "life": 4,
-                "strength": 5,
-                "armor": 2,
-                "speed": 1,
-                "action": "None",
-                "target": "None",
-                "dead": false,
-                "arena_id": 2
+                "character": "42e34553-641d-4cf9-9746-2169c74dccca",
+                "killer": "3b26a7d6-6935-4ae2-8ebe-2cec4c8952f1"
             }
         ],
         [
-            1732480865.3372364,
+            1732486984.0506785,
             {
-                "cid": "65a7c606-dd26-44d7-aa16-17a715e659b4",
-                "teamid": 4,
-                "life": 5,
-                "strength": 4,
-                "armor": 4,
-                "speed": 1,
-                "action": "None",
-                "target": "None",
-                "dead": false,
-                "arena_id": 2
+                "character": "e1f0d3ef-a0f0-465f-b6ee-cde0e061d534",
+                "killer": "c02b931b-1b19-4b48-b1b5-9dd38dfd8595"
             }
         ],
         [
-            1732480868.0262609,
+            1732486987.324935,
             {
-                "cid": "d06d84ab-7dbb-4b73-89a8-391888ab1633",
-                "teamid": 5,
-                "life": -1,
-                "strength": 6,
-                "armor": 4,
-                "speed": 2,
-                "action": "None",
-                "target": "None",
-                "dead": true,
-                "arena_id": 2
+                "character": "a1f83730-8824-4192-b0fd-2827e37bdfe9",
+                "killer": "9ea26084-9c7a-4261-8185-8b1c817bff98"
             }
         ],
         [
-            1732480870.4967928,
+            1732486987.324935,
             {
-                "cid": "5c777584-7a7c-4362-a6cf-db9944ff946a",
-                "teamid": 5,
-                "life": 9,
-                "strength": 7,
-                "armor": 3,
-                "speed": 1,
-                "action": "None",
-                "target": "None",
-                "dead": false,
-                "arena_id": 2
+                "character": "3b26a7d6-6935-4ae2-8ebe-2cec4c8952f1",
+                "killer": "d156240d-587e-46ba-8dee-5fc60824cced"
             }
         ],
         [
-            1732480874.25049,
+            1732486987.324935,
             {
-                "cid": "068e9bce-eb7b-495f-a257-4102ade2d508",
-                "teamid": 3,
-                "life": 5,
-                "strength": 3,
-                "armor": 2,
-                "speed": 3,
-                "action": "None",
-                "target": "None",
-                "dead": false,
-                "arena_id": 2
+                "character": "aead4533-e4d9-4e3f-bfed-cb7a67680965",
+                "killer": "8f940473-116d-4eb6-b508-a389840ce316"
             }
         ],
         [
-            1732480874.25049,
+            1732486987.324935,
             {
-                "cid": "3348ab6c-0d76-488e-97e0-8ec1b00a0be8",
-                "teamid": 2,
-                "life": 3,
-                "strength": 5,
-                "armor": 2,
-                "speed": 2,
-                "action": "None",
-                "target": "None",
-                "dead": false,
-                "arena_id": 2
+                "character": "7e8dc7bb-b9c2-4e27-a221-2e630579a210",
+                "killer": "4a4301c0-c2a4-4b25-994c-e53454d68609"
+            }
+        ],
+        [
+            1732486987.324935,
+            {
+                "character": "21e479bc-f809-4d13-b0d1-4a78b3c0dc70",
+                "killer": "26c7547d-4cd2-4efb-aeb5-67385769bf17"
+            }
+        ],
+        [
+            1732486989.9059544,
+            {
+                "character": "8f940473-116d-4eb6-b508-a389840ce316",
+                "killer": "deeef4a6-2631-42b4-be19-c9d71b3bc02e"
+            }
+        ],
+        [
+            1732486992.150672,
+            {
+                "character": "c356ca75-a75b-482e-b34e-2207ce9aec9f",
+                "killer": "deeef4a6-2631-42b4-be19-c9d71b3bc02e"
+            }
+        ],
+        [
+            1732486992.150672,
+            {
+                "character": "4cbaffb8-a35e-40b7-a43e-581a23d266b7",
+                "killer": "c02b931b-1b19-4b48-b1b5-9dd38dfd8595"
+            }
+        ],
+        [
+            1732486992.150672,
+            {
+                "character": "1a433b7e-e7b0-4018-b951-661d66093e66",
+                "killer": "0346bda5-73fb-49d1-a654-cc0034094b46"
+            }
+        ],
+        [
+            1732486994.0585942,
+            {
+                "character": "d156240d-587e-46ba-8dee-5fc60824cced",
+                "killer": "d156240d-587e-46ba-8dee-5fc60824cced"
+            }
+        ],
+        [
+            1732486994.0585942,
+            {
+                "character": "c02b931b-1b19-4b48-b1b5-9dd38dfd8595",
+                "killer": "c02b931b-1b19-4b48-b1b5-9dd38dfd8595"
+            }
+        ],
+        [
+            1732486994.0585942,
+            {
+                "character": "4a4301c0-c2a4-4b25-994c-e53454d68609",
+                "killer": "911823c6-d287-4530-b00d-4c24de89a8a6"
+            }
+        ],
+        [
+            1732486995.649032,
+            {
+                "character": "2a6d6a8c-7b4c-470a-91ad-119df763e7aa",
+                "killer": "2a6d6a8c-7b4c-470a-91ad-119df763e7aa"
+            }
+        ],
+        [
+            1732486995.649032,
+            {
+                "character": "deeef4a6-2631-42b4-be19-c9d71b3bc02e",
+                "killer": "deeef4a6-2631-42b4-be19-c9d71b3bc02e"
+            }
+        ],
+        [
+            1732486995.649032,
+            {
+                "character": "911823c6-d287-4530-b00d-4c24de89a8a6",
+                "killer": "208437b3-eed9-47f5-9e93-9a0ad421fb40"
+            }
+        ],
+        [
+            1732486995.649032,
+            {
+                "character": "26c7547d-4cd2-4efb-aeb5-67385769bf17",
+                "killer": "1945e4cd-89a0-488a-bd2a-948f0c893cc8"
+            }
+        ],
+        [
+            1732486996.723792,
+            {
+                "character": "0346bda5-73fb-49d1-a654-cc0034094b46",
+                "killer": "9ea26084-9c7a-4261-8185-8b1c817bff98"
+            }
+        ],
+        [
+            1732486996.723792,
+            {
+                "character": "8577ec60-d25a-430a-b0eb-21a2618f770a",
+                "killer": "208437b3-eed9-47f5-9e93-9a0ad421fb40"
+            }
+        ],
+        [
+            1732486998.67626,
+            {
+                "character": "9ea26084-9c7a-4261-8185-8b1c817bff98",
+                "killer": "1945e4cd-89a0-488a-bd2a-948f0c893cc8"
+            }
+        ],
+        [
+            1732486999.4667604,
+            {
+                "character": "208437b3-eed9-47f5-9e93-9a0ad421fb40",
+                "killer": "208437b3-eed9-47f5-9e93-9a0ad421fb40"
+            }
+        ],
+        [
+            1732487000.2308724,
+            {
+                "character": "1945e4cd-89a0-488a-bd2a-948f0c893cc8",
+                "killer": "a10e2efc-3919-44d5-a44c-4ef270cce937"
             }
         ]
     ],
     "turn_id": [
         [
-            1732480857.7117498,
+            1732486974.499744,
             1
         ],
         [
-            1732480861.412243,
+            1732486981.0069993,
             2
         ],
         [
-            1732480865.3372364,
+            1732486984.0506785,
             3
         ],
         [
-            1732480868.0262609,
+            1732486987.324935,
             4
         ],
         [
-            1732480870.4967928,
+            1732486989.9059544,
             5
         ],
         [
-            1732480872.3884447,
+            1732486992.150672,
             6
         ],
         [
-            1732480874.25049,
+            1732486994.0585942,
             7
-        ]
-    ],
-    "death": [
-        [
-            1732480865.3372364,
-            {
-                "character": "5630c791-7b45-4e7a-a91b-dfbc853aca8f",
-                "killer": "3348ab6c-0d76-488e-97e0-8ec1b00a0be8"
-            }
         ],
         [
-            1732480865.3372364,
-            {
-                "character": "dd692bf5-f593-4408-b4f4-db3cda39a3c3",
-                "killer": "5c777584-7a7c-4362-a6cf-db9944ff946a"
-            }
+            1732486995.649032,
+            8
         ],
         [
-            1732480868.0262609,
-            {
-                "character": "d06d84ab-7dbb-4b73-89a8-391888ab1633",
-                "killer": "5c777584-7a7c-4362-a6cf-db9944ff946a"
-            }
+            1732486996.723792,
+            9
         ],
         [
-            1732480870.4967928,
-            {
-                "character": "9e2a1824-0b27-4e18-8794-f859339f0639",
-                "killer": "3348ab6c-0d76-488e-97e0-8ec1b00a0be8"
-            }
+            1732486997.707131,
+            10
+        ],
+        [
+            1732486998.67626,
+            11
+        ],
+        [
+            1732486999.4667604,
+            12
+        ],
+        [
+            1732487000.2308724,
+            13
         ]
     ]
 }

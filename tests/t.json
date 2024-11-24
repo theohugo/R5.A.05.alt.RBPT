@@ -1,0 +1,478 @@
+{
+    "enter_arena": [
+        [
+            1694181444.3692462,
+            {
+                "cid": "962",
+                "teamid": "B",
+                "life": 14,
+                "strength": 1,
+                "armor": 5,
+                "speed": 0,
+                "action": "None",
+                "target": "None",
+                "dead": false
+            }
+        ],
+        [
+            1694181444.372623,
+            {
+                "cid": "774",
+                "teamid": "B",
+                "life": 3,
+                "strength": 15,
+                "armor": 5,
+                "speed": 2,
+                "action": "None",
+                "target": "None",
+                "dead": false
+            }
+        ],
+        [
+            1694181444.3746595,
+            {
+                "cid": "723",
+                "teamid": "A",
+                "life": 10,
+                "strength": 4,
+                "armor": 4,
+                "speed": 2,
+                "action": "None",
+                "target": "None",
+                "dead": false
+            }
+        ],
+        [
+            1694181444.3767238,
+            {
+                "cid": "613",
+                "teamid": "A",
+                "life": 8,
+                "strength": 4,
+                "armor": 4,
+                "speed": 4,
+                "action": "None",
+                "target": "None",
+                "dead": false
+            }
+        ]
+    ],
+    "gold": [
+        [
+            1694181444.3692474,
+            {
+                "962": 0
+            }
+        ],
+        [
+            1694181444.372624,
+            {
+                "774": 0
+            }
+        ],
+        [
+            1694181444.374661,
+            {
+                "723": 0
+            }
+        ],
+        [
+            1694181444.3767247,
+            {
+                "613": 0
+            }
+        ]
+    ],
+    "set_action": [
+        [
+            1694181444.3813837,
+            {
+                "cid": "723",
+                "teamid": "A",
+                "life": 10,
+                "strength": 4,
+                "armor": 4,
+                "speed": 2,
+                "action": "2",
+                "target": "None",
+                "dead": false
+            }
+        ],
+        [
+            1694181444.383202,
+            {
+                "cid": "962",
+                "teamid": "B",
+                "life": 14,
+                "strength": 1,
+                "armor": 5,
+                "speed": 0,
+                "action": "1",
+                "target": "None",
+                "dead": false
+            }
+        ],
+        [
+            1694181444.3850749,
+            {
+                "cid": "613",
+                "teamid": "A",
+                "life": 8,
+                "strength": 4,
+                "armor": 4,
+                "speed": 4,
+                "action": "0",
+                "target": "None",
+                "dead": false
+            }
+        ],
+        [
+            1694181444.3869474,
+            {
+                "cid": "774",
+                "teamid": "B",
+                "life": 3,
+                "strength": 15,
+                "armor": 5,
+                "speed": 2,
+                "action": "2",
+                "target": "None",
+                "dead": false
+            }
+        ],
+        [
+            1694181449.405404,
+            {
+                "cid": "723",
+                "teamid": "A",
+                "life": 10,
+                "strength": 4,
+                "armor": 4,
+                "speed": 2,
+                "action": "1",
+                "target": "None",
+                "dead": false
+            }
+        ],
+        [
+            1694181449.413812,
+            {
+                "cid": "962",
+                "teamid": "B",
+                "life": 10,
+                "strength": 1,
+                "armor": 5,
+                "speed": 0,
+                "action": "0",
+                "target": "None",
+                "dead": false
+            }
+        ],
+        [
+            1694181449.4205492,
+            {
+                "cid": "613",
+                "teamid": "A",
+                "life": 8,
+                "strength": 4,
+                "armor": 4,
+                "speed": 4,
+                "action": "1",
+                "target": "None",
+                "dead": false
+            }
+        ],
+        [
+            1694181449.4227233,
+            {
+                "cid": "774",
+                "teamid": "B",
+                "life": 3,
+                "strength": 15,
+                "armor": 5,
+                "speed": 2,
+                "action": "1",
+                "target": "None",
+                "dead": false
+            }
+        ],
+        [
+            1694181454.4426537,
+            {
+                "cid": "723",
+                "teamid": "A",
+                "life": 7,
+                "strength": 4,
+                "armor": 4,
+                "speed": 2,
+                "action": "0",
+                "target": "None",
+                "dead": false
+            }
+        ],
+        [
+            1694181454.45049,
+            {
+                "cid": "962",
+                "teamid": "B",
+                "life": 10,
+                "strength": 1,
+                "armor": 5,
+                "speed": 0,
+                "action": "1",
+                "target": "None",
+                "dead": false
+            }
+        ],
+        [
+            1694181454.4547951,
+            {
+                "cid": "613",
+                "teamid": "A",
+                "life": 8,
+                "strength": 4,
+                "armor": 4,
+                "speed": 4,
+                "action": "2",
+                "target": "None",
+                "dead": false
+            }
+        ],
+        [
+            1694181454.456919,
+            {
+                "cid": "774",
+                "teamid": "B",
+                "life": 3,
+                "strength": 15,
+                "armor": 5,
+                "speed": 2,
+                "action": "1",
+                "target": "None",
+                "dead": false
+            }
+        ]
+    ],
+    "set_target": [
+        [
+            1694181444.388817,
+            {
+                "cid": "723",
+                "teamid": "A",
+                "life": 10,
+                "strength": 4,
+                "armor": 4,
+                "speed": 2,
+                "action": "2",
+                "target": "774",
+                "dead": false
+            }
+        ],
+        [
+            1694181444.3905747,
+            {
+                "cid": "613",
+                "teamid": "A",
+                "life": 8,
+                "strength": 4,
+                "armor": 4,
+                "speed": 4,
+                "action": "0",
+                "target": "962",
+                "dead": false
+            }
+        ],
+        [
+            1694181444.3922474,
+            {
+                "cid": "962",
+                "teamid": "B",
+                "life": 14,
+                "strength": 1,
+                "armor": 5,
+                "speed": 0,
+                "action": "1",
+                "target": "613",
+                "dead": false
+            }
+        ],
+        [
+            1694181444.3939118,
+            {
+                "cid": "774",
+                "teamid": "B",
+                "life": 3,
+                "strength": 15,
+                "armor": 5,
+                "speed": 2,
+                "action": "2",
+                "target": "613",
+                "dead": false
+            }
+        ],
+        [
+            1694181449.4247785,
+            {
+                "cid": "723",
+                "teamid": "A",
+                "life": 10,
+                "strength": 4,
+                "armor": 4,
+                "speed": 2,
+                "action": "1",
+                "target": "774",
+                "dead": false
+            }
+        ],
+        [
+            1694181449.4267075,
+            {
+                "cid": "613",
+                "teamid": "A",
+                "life": 8,
+                "strength": 4,
+                "armor": 4,
+                "speed": 4,
+                "action": "1",
+                "target": "962",
+                "dead": false
+            }
+        ],
+        [
+            1694181449.428584,
+            {
+                "cid": "962",
+                "teamid": "B",
+                "life": 10,
+                "strength": 1,
+                "armor": 5,
+                "speed": 0,
+                "action": "0",
+                "target": "723",
+                "dead": false
+            }
+        ],
+        [
+            1694181449.4303176,
+            {
+                "cid": "774",
+                "teamid": "B",
+                "life": 3,
+                "strength": 15,
+                "armor": 5,
+                "speed": 2,
+                "action": "1",
+                "target": "613",
+                "dead": false
+            }
+        ],
+        [
+            1694181454.4587274,
+            {
+                "cid": "723",
+                "teamid": "A",
+                "life": 7,
+                "strength": 4,
+                "armor": 4,
+                "speed": 2,
+                "action": "0",
+                "target": "962",
+                "dead": false
+            }
+        ],
+        [
+            1694181454.460536,
+            {
+                "cid": "613",
+                "teamid": "A",
+                "life": 8,
+                "strength": 4,
+                "armor": 4,
+                "speed": 4,
+                "action": "2",
+                "target": "774",
+                "dead": false
+            }
+        ],
+        [
+            1694181454.46235,
+            {
+                "cid": "962",
+                "teamid": "B",
+                "life": 10,
+                "strength": 1,
+                "armor": 5,
+                "speed": 0,
+                "action": "1",
+                "target": "723",
+                "dead": false
+            }
+        ],
+        [
+            1694181454.464067,
+            {
+                "cid": "774",
+                "teamid": "B",
+                "life": 3,
+                "strength": 15,
+                "armor": 5,
+                "speed": 2,
+                "action": "1",
+                "target": "613",
+                "dead": false
+            }
+        ]
+    ],
+    "start_game": [
+        [
+            1694181445.381179,
+            ""
+        ]
+    ],
+    "damage": [
+        [
+            1694181445.3812664,
+            {
+                "character": "613",
+                "target": "962",
+                "damage": 4,
+                "reduced": 0,
+                "dodged": 0
+            }
+        ],
+        [
+            1694181450.3829827,
+            {
+                "character": "962",
+                "target": "723",
+                "damage": 3,
+                "reduced": 4,
+                "dodged": 0
+            }
+        ],
+        [
+            1694181455.3881948,
+            {
+                "character": "723",
+                "target": "962",
+                "damage": 4,
+                "reduced": 0,
+                "dodged": 0
+            }
+        ]
+    ],
+    "turn_id": [
+        [
+            1694181445.3812804,
+            1
+        ],
+        [
+            1694181450.3830059,
+            2
+        ],
+        [
+            1694181455.3882468,
+            3
+        ]
+    ]
+}

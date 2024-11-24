@@ -2,10 +2,10 @@ from random import randint
 from Project.Engine.action import *
 
 class CharacterProxy:
-    def __init__(self, cid :str, teamid :str, life :int, strength :int, armor :int, speed :int, arena_id :int):
+    def __init__(self, cid: str, teamid: str, life: int, strength: int, armor: int, speed: int, arena_id: int, name: str = None):
         self._id = cid
         self._teamid = teamid
-        #self._name = name
+        self._name = name if name else cid 
         self._life = life
         self._strength = strength
         self._armor = armor
@@ -13,8 +13,10 @@ class CharacterProxy:
         self.arena_id = arena_id
         self._action = None
         self._target = None
-        #self._id = self._name + str(randint(0, 1000))
         self._dead = False
+
+    def getName(self):
+        return self._name
 
     def isDead(self):
         return self._dead
@@ -71,6 +73,7 @@ class CharacterProxy:
     def __str__(self):
         s = "------------\n"
         s += "cid : " + self._id + ",\n"
+        s += "name : " + self._name + ",\n"
         s += "life : " + str(self._life) + "\n"
         s += "strength : " + str(self._strength) + "\n"
         s += "armor : " + str(self._armor) + "\n"
@@ -80,15 +83,18 @@ class CharacterProxy:
         return s
 
     def toDict(self):
-        cDict = {}
-        cDict["cid"] = self._id
-        cDict["teamid"] = self._teamid
-        cDict["life"] = self._life
-        cDict["strength"] = self._strength
-        cDict["armor"] = self._armor
-        cDict["speed"] = self._speed
-        cDict["action"] = actionToStr(self._action)
-        cDict["target"] = str(self._target)
-        cDict["dead"] = self._dead
-        cDict["arena_id"] = self.arena_id
+        cDict = {
+            "cid": self._id,
+            "teamid": self._teamid,
+            "name": self._name,
+            "life": self._life,
+            "strength": self._strength,
+            "armor": self._armor,
+            "speed": self._speed,
+            "action": actionToStr(self._action),
+            "target": str(self._target),
+            "dead": self._dead,
+            "arena_id": self.arena_id
+        }
         return cDict
+

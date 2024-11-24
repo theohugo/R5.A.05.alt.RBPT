@@ -9,18 +9,28 @@ class TestEngineRealAPI(unittest.TestCase):
     def setUp(self):
         """Initialisation pour chaque test."""
         self.players = []
+        self.round_number = 0  # Pour suivre le nombre de rounds
+
+    # Fonctions Utilitaires
 
     def create_player(self, player_data):
         """Créer un joueur via l'API et retourner son ID."""
         response = requests.post(f"{self.BASE_URL}/character/join/", json=player_data)
         self.assertEqual(response.status_code, 201, f"Player creation failed: {response.json()}")
-        return response.json()['cid']
+        player_id = response.json()['cid']
+        print(f"[INFO] Joueur créé : ID = {player_id}, Données = {player_data}")
+        return player_id
 
     def perform_action(self, actor_id, action_id, target_id):
         """Effectuer une action pour un joueur."""
         response = requests.post(
             f"{self.BASE_URL}/character/action/{actor_id}/{action_id}/{target_id}"
         )
+        if response.status_code != 200:
+            error_message = response.json().get('error', 'Unknown error')
+            print(f"[ERROR] Action échouée pour Joueur {actor_id} sur Cible {target_id} avec Action {action_id}: {error_message}")
+        else:
+            print(f"[ACTION] Joueur {actor_id} a effectué l'action {action_id} sur la cible {target_id} avec succès.")
         self.assertEqual(response.status_code, 200, f"Action failed: {response.json()}")
         return response.json()
 
@@ -34,12 +44,102 @@ class TestEngineRealAPI(unittest.TestCase):
         """Mettre à jour la liste des joueurs actifs (ceux qui sont encore en vie)."""
         current_state = self.get_all_players()
         self.players = [char['cid'] for char in current_state if not char['dead']]
+        print(f"[INFO] Joueurs encore en vie : {self.players}")
 
     def get_teams(self):
         """Retourner les équipes actives."""
         current_state = self.get_all_players()
         teams = set(char['teamid'] for char in current_state if not char['dead'])
         return teams
+
+    def organize_teams(self, players):
+        """Organiser les joueurs par équipe."""
+        teams = {}
+        for player in players:
+            if player['teamid'] not in teams:
+                teams[player['teamid']] = []
+            teams[player['teamid']].append(player)
+        return teams
+
+    # Affichages
+
+    def format_life(self, life):
+        """Formater la vie avec deux chiffres après la virgule."""
+        return f"{life:.2f}"
+
+    def display_round_status(self):
+        """Affichage ASCII de l'état des équipes et joueurs après chaque round."""
+        players = self.get_all_players()
+        teams = self.organize_teams(players)
+
+        team_keys = list(teams.keys())
+        grouped_teams = [team_keys[i:i + 5] for i in range(0, len(team_keys), 5)]
+
+        print("\n=== État des Joueurs à la Fin du Round ===")
+
+        for group in grouped_teams:
+            # Impression des noms des équipes
+            team_headers = ""
+            for team_id in group:
+                team_headers += f"Équipe {team_id}".center(25) + " "
+            print(team_headers)
+
+            # Impression des séparateurs
+            separators = "+-----------+---------------+" * len(group)
+            print(separators)
+
+            # Impression des détails des joueurs
+            max_players = max(len(teams[team]) for team in group)
+            for i in range(max_players):
+                row = ""
+                for team_id in group:
+                    if i < len(teams[team_id]):
+                        player = teams[team_id][i]
+                        life = self.format_life(player['life']) if not player['dead'] else "MORT"
+                        row += f"| {player['cid'][:8]} | Vie: {life}".ljust(25) + " "
+                    else:
+                        row += " " * 25 + " "
+                print(row)
+
+            # Impression des séparateurs de fin
+            print(separators)
+
+    def display_end_game_status(self):
+        """Affichage ASCII de l'état final des joueurs et équipes."""
+        players = self.get_all_players()
+        teams = self.organize_teams(players)
+
+        team_keys = list(teams.keys())
+        grouped_teams = [team_keys[i:i + 5] for i in range(0, len(team_keys), 5)]
+
+        print("\n=== État Final des Joueurs ===")
+
+        for group in grouped_teams:
+            # Impression des noms des équipes
+            team_headers = ""
+            for team_id in group:
+                team_headers += f"Équipe {team_id}".center(25) + " "
+            print(team_headers)
+
+            # Impression des séparateurs
+            separators = "+-----------+---------------+" * len(group)
+            print(separators)
+
+            # Impression des détails des joueurs
+            max_players = max(len(teams[team]) for team in group)
+            for i in range(max_players):
+                row = ""
+                for team_id in group:
+                    if i < len(teams[team_id]):
+                        player = teams[team_id][i]
+                        life = self.format_life(player['life']) if not player['dead'] else "MORT"
+                        row += f"| {player['cid'][:8]} | Vie: {life}".ljust(25) + " "
+                    else:
+                        row += " " * 25 + " "
+                print(row)
+
+            # Impression des séparateurs de fin
+            print(separators)
 
     def display_individual_ranking(self, ranking_data):
         """Affichage du classement individuel."""
@@ -49,12 +149,12 @@ class TestEngineRealAPI(unittest.TestCase):
 
         print("\n--- Top 3 Joueurs ---")
         for rank, player in enumerate(top_3_individuals, start=1):
-            print(f"#{rank}: Joueur ID: {player['cid']}, Or: {player['gold']}, Équipe: {player['team']}")
+            print(f"#{rank}: Joueur ID: {player['cid']}, Or: {player['gold']:.2f}, Équipe: {player['team']}")
 
         if others_individuals:
             print("\n--- Autres Joueurs ---")
             for rank, player in enumerate(others_individuals, start=4):
-                print(f"#{rank}: Joueur ID: {player['cid']}, Or: {player['gold']}, Équipe: {player['team']}")
+                print(f"#{rank}: Joueur ID: {player['cid']}, Or: {player['gold']:.2f}, Équipe: {player['team']}")
 
     def display_team_ranking(self, ranking_data):
         """Affichage du classement par équipe."""
@@ -64,19 +164,20 @@ class TestEngineRealAPI(unittest.TestCase):
 
         print("\n--- Top 3 Équipes ---")
         for rank, team in enumerate(top_3_teams, start=1):
-            print(f"#{rank}: Équipe ID: {team['team_id']}, Or Total: {team['gold']}")
+            print(f"#{rank}: Équipe ID: {team['team_id']}, Or Total: {team['gold']:.2f}")
 
         if others_teams:
             print("\n--- Autres Équipes ---")
             for rank, team in enumerate(others_teams, start=4):
-                print(f"#{rank}: Équipe ID: {team['team_id']}, Or Total: {team['gold']}")
+                print(f"#{rank}: Équipe ID: {team['team_id']}, Or Total: {team['gold']:.2f}")
+
+    # Test Principal
 
     def test_until_last_team_standing(self):
         """Continuer jusqu'à ce qu'il ne reste plus qu'une équipe."""
-        teams = 5
+        # Étape 1 : Ajouter les players
+        teams = 10
         players_per_team = 3
-
-        # Étape 1 : Ajouter les joueurs
         for team_id in range(1, teams + 1):
             for player_index in range(players_per_team):
                 valid_stats = False
@@ -99,30 +200,35 @@ class TestEngineRealAPI(unittest.TestCase):
                 }
                 player_id = self.create_player(player_data)
                 self.players.append(player_id)
-                time.sleep(0.5)
+        self.round_number = 0
 
         # Étape 2 : Continuer jusqu'à ce qu'il ne reste plus qu'une équipe
         while len(self.get_teams()) > 1:
-            self.update_active_players()
-
-            if len(self.players) < 2:
-                break
-
-            for player_id in self.players:
-                possible_targets = [pid for pid in self.players if pid != player_id]
-                if not possible_targets:
-                    continue
-
+            self.round_number += 1
+            print(f"\n=== Début du Round {self.round_number} ===")
+            
+            # Ne pas mettre à jour la liste des joueurs encore en vie avant chaque action,
+            # car ils doivent agir sans connaître l'état à jour des autres.
+            initial_players = self.players[:]
+            possible_targets = [pid for pid in initial_players if pid != player_id]
+            for player_id in initial_players:
                 target_id = random.choice(possible_targets)
-                action_id = random.choice([0, 1, 2, 3])
+                action_id = random.choice([0, 1, 2])
 
                 try:
                     self.perform_action(player_id, action_id, target_id)
                 except AssertionError as e:
-                    print(f"Action failed for Player {player_id} on target {target_id}: {str(e)}")
+                    print(f"[ERROR] Action échouée pour Joueur {player_id} sur Cible {target_id}: {str(e)}")
 
-                time.sleep(0.2)
+            # Mettre à jour la liste des joueurs après le round
+            self.update_active_players()
 
+            # Afficher l'état des joueurs à la fin de chaque round
+            self.display_round_status()
+            print(f"=== Fin du Round {self.round_number} ===")
+            time.sleep(0.2)
+
+        
         # Étape 3 : Récupérer le classement individuel et par équipe
         individual_ranking = requests.get(f"{self.BASE_URL}/ranking/individual/")
         self.assertEqual(individual_ranking.status_code, 200)
@@ -135,6 +241,9 @@ class TestEngineRealAPI(unittest.TestCase):
         # Afficher les classements avec les fonctions
         self.display_individual_ranking(individual_ranking_data)
         self.display_team_ranking(team_ranking_data)
+
+        # Afficher l'état final des joueurs
+        self.display_end_game_status()
 
 if __name__ == '__main__':
     unittest.main()
