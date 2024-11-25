@@ -36,15 +36,18 @@
    git clone https://github.com/theohugo/R5.A.05.alt.RBPT.git
    ```
 ## Lancement de l'API
+1. Se placer dans le bon dossier
+  ```bash
+   cd R5.A.05.alt.RBPT/
+   ```
 
-1. Installez les dépendances :
+2. Installez les dépendances :
 
    ```bash
-   cd R5.A.05.alt.RBPT/
    pip install -r requirements.txt
    ```
    
-2. Lancez l'API avec Flask :
+3. Lancez l'API avec Flask :
 
    ```bash
    flask run
