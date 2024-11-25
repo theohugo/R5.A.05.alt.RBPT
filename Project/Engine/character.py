@@ -2,7 +2,7 @@ from random import randint
 from Project.Engine.action import *
 
 class CharacterProxy:
-    def __init__(self, cid: str, teamid: str, life: int, strength: int, armor: int, speed: int, arena_id: int, name: str = None):
+    def __init__(self, cid: str, teamid: str, life: int, strength: int, armor: int, speed: int, _arena_id: int, name: str = None):
         self._id = cid
         self._teamid = teamid
         self._name = name if name else cid 
@@ -10,7 +10,7 @@ class CharacterProxy:
         self._strength = strength
         self._armor = armor
         self._speed = speed
-        self.arena_id = arena_id
+        self._arena_id = _arena_id
         self._action = None
         self._target = None
         self._dead = False
@@ -40,7 +40,7 @@ class CharacterProxy:
         return self._speed
     
     def getArenaId(self):
-        return self.arena_id
+        return self._arena_id
 
     def getAction(self):
         if self._action == ACTION.HIT or self._action == ACTION.FLY:
@@ -68,7 +68,7 @@ class CharacterProxy:
         self._target = value
         
     def setArenaId(self, value):
-        self.arena_id = value
+        self._arena_id = value
 
     def __str__(self):
         s = "------------\n"
@@ -78,7 +78,7 @@ class CharacterProxy:
         s += "strength : " + str(self._strength) + "\n"
         s += "armor : " + str(self._armor) + "\n"
         s += "speed : " + str(self._speed) + "\n"
-        s += "arena : " + str(self.arena_id) + "\n"
+        s += "arena : " + str(self._arena_id) + "\n"
         s += "------------\n"
         return s
 
@@ -94,7 +94,7 @@ class CharacterProxy:
             "action": actionToStr(self._action),
             "target": str(self._target),
             "dead": self._dead,
-            "arena_id": self.arena_id
+            "_arena_id": self._arena_id
         }
         return cDict
 

@@ -25,5 +25,5 @@ game_thread.start()
 app.register_blueprint(routes_blueprint)
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=False, port=6969, host="0.0.0.0")
     

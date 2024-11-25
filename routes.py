@@ -14,11 +14,6 @@ arena_networks = {
     2: {"arena_network": "192.168.10.2"}
 }
 
-matches = [
-    {"id": 1, "title": "Learn Flask", "done": False},
-    {"id": 2, "title": "Build an API", "done": False}
-]
-
 # GET - dire bonjour
 @routes_blueprint.route('/', methods=['GET'])
 def say_hello():
@@ -111,24 +106,32 @@ def delete_character(cid):
             return jsonify({"message": f"Personnage avec cid {cid} supprimé."}), 200
     return jsonify({"error": "Personnage non trouvé"}), 404
 
-# POST - /character/action/switcharena/<character_id>/<arena_id>
-@routes_blueprint.route('/character/action/switcharena/<string:character_id>/<string:arena_id>', methods=['POST'])
-def switch_arena(character_id, arena_id):
-    character_response = current_app.engine.getPlayerByName(character_id)
-    character_data = character_response.get_json()
-    if 'error' in character_data:
-        return jsonify(character_data), 404
+# PUT - /character/action/switcharena/<cid>/<action_id>/<arena_id>
+@routes_blueprint.route('/character/action/switcharena/<string:cid>/<int:action_id>/<int:arena_id>', methods=['PUT'])
+def switch_arena(cid, action_id, arena_id):
+    
+    arena = current_app.engine._arena
+    dataCharacter = arena.getPlayerByName(id=cid)
+    current_arena_id = dataCharacter.getArenaId()
 
-    new_arena_url = select_new_arena(arena_id)
-    response = send_to_arena(new_arena_url, character_data)
+    if not dataCharacter:
+        return jsonify({"error": f"Personnage avec cid {cid} non trouvé"}), 404
+    
+    try:
+        action = ACTION(action_id)
+    except ValueError:
+        return jsonify({"error": f"Action ID {action_id} non valide"}), 400
 
-    if response.status == 200:
-        return jsonify({
-            "message": "Personnage transféré avec succès.",
-            "new_arena_url": new_arena_url
-        }), 200
-    else:
-        return jsonify({"error": "Erreur lors du transfert de personnage."}), 500
+    # Appliquer l'action et vérifier si une cible est requise
+    dataCharacter.setAction(action)
+    if action == ACTION.FLY:
+        dataCharacter.setArena(arena_id)                                                                                                          
+        
+    return jsonify({
+        "message": f"Personnage '{cid}' a quitté l'arène {current_arena_id} pour aller sur l'arène {arena_id}.",
+        "character": dataCharacter.toDict()
+    }), 200
+   
 
 # POST - /character/action/<cid>/<action>
 @routes_blueprint.route('/character/action/<string:cid>/<int:action_id>/<string:target_id>', methods=['POST'])
