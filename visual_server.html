@@ -95,7 +95,7 @@
             border-radius: 8px;
             box-sizing: border-box;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            max-height: 300px;
+            max-height: 500px;
             overflow-y: auto;
         }
 
@@ -153,6 +153,27 @@
             color: #007BFF;
         }
 
+        /* Styles pour le tableau des points de vie */
+        .health-table {
+            width: 100%;
+            max-width: 250px; /* Limite la largeur du tableau */
+            table-layout: fixed; /* Utilise un layout de table fixe */
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .health-table th, .health-table td {
+            border: 1px solid #ddd;
+            padding: 5px;
+            text-align: center;
+            width: 50%; /* Largeur fixe pour les colonnes */
+            word-wrap: break-word; /* Permet le retour à la ligne si le contenu est trop long */
+        }
+
+        .health-table th {
+            background-color: #f9f9f9;
+        }
+
         /* Responsive Design */
         @media (max-width: 1024px) {
             .team {
@@ -189,7 +210,10 @@
 
     <script>
         // Objets pour stocker l'état des personnages
-        const characters = {};
+        let characters = {};
+
+        // Objets pour stocker les snapshots des personnages à chaque tour
+        const characterSnapshots = {};
 
         // Paramètres de vie
         const maxLife = 20; // Définir la vie maximale si nécessaire
@@ -212,8 +236,14 @@
             return actions[action] || action;
         }
 
+        // Fonction pour effectuer une copie profonde d'un objet
+        function deepCopy(obj) {
+            return JSON.parse(JSON.stringify(obj));
+        }
+
         // Fonction pour initialiser les personnages à partir des événements "enter_arena"
         function initializeCharacters(gameData) {
+            characters = {}; // Réinitialiser les personnages
             gameData.enter_arena.forEach(event => {
                 const [timestamp, data] = event;
                 if (!characters[data.cid]) { // Éviter les doublons
@@ -222,12 +252,48 @@
             });
         }
 
-        // Fonction pour mettre à jour les personnages avec les dégâts et les morts
-        function updateCharacters(gameData) {
-            // Mettre à jour les dégâts
+        // Fonction pour mettre à jour les personnages et stocker les snapshots à chaque tour
+        function processEvents(gameData) {
+            // Combiner tous les événements
+            const allEvents = [];
+
+            // Ajouter les événements de damage
             if (gameData.damage) {
                 gameData.damage.forEach(event => {
-                    const [timestamp, data] = event;
+                    allEvents.push({ type: 'damage', timestamp: event[0], data: event[1] });
+                });
+            }
+
+            // Ajouter les événements de death
+            if (gameData.death) {
+                gameData.death.forEach(event => {
+                    allEvents.push({ type: 'death', timestamp: event[0], data: event[1] });
+                });
+            }
+
+            // Ajouter les événements de turn_id
+            if (gameData.turn_id) {
+                gameData.turn_id.forEach(event => {
+                    allEvents.push({ type: 'turn', timestamp: event[0], data: { turnNumber: event[1] } });
+                });
+            }
+
+            // Trier les événements par timestamp
+            allEvents.sort((a, b) => a.timestamp - b.timestamp);
+
+            let currentTurn = 0;
+
+            // Parcourir les événements
+            allEvents.forEach(event => {
+                if (event.type === 'turn') {
+                    // Sauvegarder l'état des personnages à la fin du tour précédent
+                    if (currentTurn > 0) {
+                        characterSnapshots[currentTurn] = deepCopy(characters);
+                    }
+                    // Mettre à jour le tour courant
+                    currentTurn = event.data.turnNumber;
+                } else if (event.type === 'damage') {
+                    const data = event.data;
                     if (characters[data.character] && characters[data.target]) {
                         // Appliquer les dégâts au personnage cible
                         const actualDamage = data.damage - data.reduced;
@@ -240,18 +306,18 @@
                         characters[data.character].action = 'Attaque';
                         characters[data.character].target = data.target;
                     }
-                });
-            }
-
-            // Mettre à jour les décès
-            if (gameData.death) {
-                gameData.death.forEach(event => {
-                    const [timestamp, data] = event;
+                } else if (event.type === 'death') {
+                    const data = event.data;
                     if (characters[data.character]) {
                         characters[data.character].dead = true;
                         characters[data.character].life = 0;
                     }
-                });
+                }
+            });
+
+            // Sauvegarder l'état des personnages à la fin du dernier tour
+            if (currentTurn > 0) {
+                characterSnapshots[currentTurn] = deepCopy(characters);
             }
         }
 
@@ -416,6 +482,56 @@
                 const detailsDiv = document.createElement('div');
                 detailsDiv.classList.add('turn-details');
 
+                // Ajouter le tableau des points de vie
+                const healthTableDiv = document.createElement('div');
+                healthTableDiv.classList.add('health-tables');
+
+                // Récupérer l'état des personnages à la fin du tour
+                const snapshot = characterSnapshots[turn.turnNumber];
+
+                if (snapshot) {
+                    // Récupérer les équipes avec des personnages vivants
+                    const aliveTeams = {};
+                    for (const char of Object.values(snapshot)) {
+                        if (!char.dead) {
+                            if (!aliveTeams[char.teamid]) {
+                                aliveTeams[char.teamid] = [];
+                            }
+                            aliveTeams[char.teamid].push(char);
+                        }
+                    }
+
+                    // Générer les tableaux pour chaque équipe
+                    for (const [teamId, teamChars] of Object.entries(aliveTeams)) {
+                        const teamTable = document.createElement('table');
+                        teamTable.classList.add('health-table');
+
+                        // En-tête du tableau
+                        const headerRow = document.createElement('tr');
+                        const teamHeader = document.createElement('th');
+                        teamHeader.colSpan = 2;
+                        teamHeader.textContent = `Équipe ${teamId}`;
+                        headerRow.appendChild(teamHeader);
+                        teamTable.appendChild(headerRow);
+
+                        // Lignes des personnages
+                        teamChars.forEach(char => {
+                            const row = document.createElement('tr');
+                            const nameCell = document.createElement('td');
+                            nameCell.textContent = char.cid;
+                            const lifeCell = document.createElement('td');
+                            lifeCell.textContent = `${char.life}`;
+                            row.appendChild(nameCell);
+                            row.appendChild(lifeCell);
+                            teamTable.appendChild(row);
+                        });
+
+                        healthTableDiv.appendChild(teamTable);
+                    }
+
+                    detailsDiv.appendChild(healthTableDiv);
+                }
+
                 // Remplir la liste des dégâts
                 if (turn.damage.length > 0) {
                     const damageHeader = document.createElement('p');
@@ -476,11 +592,11 @@
                 const gameData = await response.json();
                 console.log(gameData);
 
-                // Initialiser les personnages (uniquement la première fois)
+                // Initialiser les personnages
                 initializeCharacters(gameData);
 
-                // Mettre à jour les personnages avec les actions, cibles et dégâts
-                updateCharacters(gameData);
+                // Traiter les événements et sauvegarder les snapshots
+                processEvents(gameData);
 
                 // Afficher les personnages dans les équipes
                 displayCharacters();
