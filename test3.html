@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jeu Arena</title>
+  <style>
+    /* Les styles restent inchangés */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #2c3e50;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+    }
+
+    #arena {
+      position: relative;
+      width: 800px;
+      height: 800px;
+      border-radius: 50%;
+      background-color: #34495e;
+      border: 2px solid #ecf0f1;
+      margin-top: 20px;
+    }
+
+    .character-container {
+      position: absolute;
+      width: 64px;
+      height: 200px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: top 1s, left 1s; /* Transition fluide */
+    }
+
+    .character-container img {
+      width: 64px;
+      height: 64px;
+      border-radius: 8px;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.7);
+    }
+
+    .character-info {
+      font-size: 12px;
+      margin-top: 5px;
+    }
+
+    .health-bar {
+      position: relative;
+      width: 64px;
+      height: 10px;
+      border-radius: 5px;
+      background: #eee;
+    }
+
+    .health-bar-inner {
+      height: 100%;
+      border-radius: 5px;
+    }
+
+    .stats {
+      position: absolute;
+      top: 75px;
+      font-size: 14px;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .stat-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+
+    .stat-item img {
+      width: 16px;
+      height: 16px;
+      margin-right: 5px;
+    }
+
+    .stat-item .icon {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      background-size: cover;
+    }
+
+    .icon-health {
+      background-image: url('coeur64.png');
+    }
+
+    .icon-strength {
+      background-image: url('attaque64.png');
+    }
+
+    .icon-armor {
+      background-image: url('bouclier64.png');
+    }
+
+    .icon-speed {
+      background-image: url('vitesse64.png');
+    }
+
+    /* Style pour afficher le tour en cours */
+    #turn {
+      font-size: 24px;
+      color: #ecf0f1;
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+
+    #arena-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #ecf0f1;
+      font-size: 30px;
+      font-weight: bold;
+      text-align: center;
+      pointer-events: none; /* Empêche l'interaction avec ce texte */
+    }
+
+  </style>
+</head>
+<body>
+  <div id="turn" style="
+    position: fixed;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    font-size: 24px;
+    padding: 10px 20px;
+    border-radius: 8px;
+    z-index: 1000;
+    pointer-events: none; /* Empêche l'interaction avec cet élément */
+  ">
+      Tour : 1
+  </div>
+  <div id="arena">
+    <div id="arena-text">Round 1</div>
+  </div>
+
+  <script>
+    // Objet des actions possibles
+    const actions = {
+      "0": "Aucune",
+      "1": "Attaque",
+      "2": "Défense",
+      "None": "Aucune"
+    };
+
+    // Fonction pour charger le fichier JSON
+    function loadData() {
+      fetch('data.json')  // Charge le fichier JSON
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Erreur lors de la récupération du fichier JSON');
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log('Données chargées :', data);  // Vérifier les données chargées
+          positionnerPersonnages(data.enter_arena, data);  // Correction du paramètre
+        })
+        .catch(error => {
+          console.error("Erreur lors du chargement des données JSON :", error);
+        });
+    }
+
+    // Fonction pour créer une barre de santé avec une couleur en fonction de la vie restante
+    function createHealthBar(life, initialLife) {
+      const healthBarInner = document.createElement('div');
+      healthBarInner.classList.add('health-bar-inner');
+      const healthPercentage = life / initialLife;
+
+      healthBarInner.style.width = `${healthPercentage * 100}%`;
+
+      let color;
+      if (healthPercentage <= 0.3) {
+        color = 'red';
+      } else if (healthPercentage <= 0.7) {
+        color = 'yellow';
+      } else {
+        color = 'green';
+      }
+
+      healthBarInner.style.backgroundColor = color;
+
+      return healthBarInner;
+    }
+
+    // Fonction pour obtenir l'image du personnage selon ses stats
+    function getImageForCharacter(character) {
+      let imageSrc;
+
+      const { life, strength, armor, speed } = character;
+
+      if (life >= strength && life >= armor && life >= speed) {
+        imageSrc = 'mage64.png'; 
+      } else if (strength >= life && strength >= armor && strength >= speed) {
+        imageSrc = 'soldat64.png'; 
+      } else if (armor >= life && armor >= strength && armor >= speed) {
+        imageSrc = 'tank64.png'; 
+      } else {
+        imageSrc = 'archer64.png'; 
+      }
+
+      return imageSrc;
+    }
+
+    // Fonction pour positionner les personnages dans l'arène
+    function positionnerPersonnages(data, allData) {
+      const arena = document.getElementById('arena');
+      const characters = data.map(([timestamp, character]) => character);  // Mapping des personnages
+      const numCharacters = characters.length;
+      const centerX = arena.offsetWidth / 2;
+      const centerY = arena.offsetHeight / 2;
+      const radius = 200;
+      const angleStep = (2 * Math.PI) / numCharacters;
+
+      const charContainers = {};
+
+      characters.forEach((character, index) => {
+        const angle = angleStep * index;
+        const x = centerX + radius * Math.cos(angle) - 32;
+        const y = centerY + radius * Math.sin(angle) - 32;
+
+        const charContainer = document.createElement('div');
+        charContainer.classList.add('character-container');
+        charContainer.style.left = `${x}px`;
+        charContainer.style.top = `${y}px`;
+
+        const img = document.createElement('img');
+        img.src = getImageForCharacter(character);
+
+        const info = document.createElement('div');
+        info.classList.add('character-info');
+        info.innerHTML = `<div>CID: ${character.cid}</div><div>Team: ${character.teamid}</div>`;
+
+        const initialLife = character.life;
+
+        const healthBar = document.createElement('div');
+        healthBar.classList.add('health-bar');
+        healthBar.appendChild(createHealthBar(character.life, initialLife));
+
+        const statsElement = document.createElement('div');
+        statsElement.classList.add('stats');
+        statsElement.innerHTML =  
+          `<div class="stat-item">
+            <div class="icon icon-health"></div>
+            <span>${character.life}</span>
+          </div>
+          <div class="stat-item">
+            <div class="icon icon-strength"></div>
+            <span>${character.strength}</span>
+          </div>
+          <div class="stat-item">
+            <div class="icon icon-armor"></div>
+            <span>${character.armor}</span>
+          </div>
+          <div class="stat-item">
+            <div class="icon icon-speed"></div>
+            <span>${character.speed}</span>
+          </div>`;
+
+        charContainer.appendChild(img);
+        charContainer.appendChild(info);
+        charContainer.appendChild(healthBar);
+        charContainer.appendChild(statsElement);
+
+        arena.appendChild(charContainer);
+
+        healthBar.style.top = '-120px';
+        statsElement.style.left = '70px';
+        statsElement.style.top = '40px';
+
+        charContainers[character.cid] = { 
+          element: charContainer, 
+          position: { x, y },
+          character: character,
+          healthBar: healthBar, 
+          initialLife: initialLife // Ajouter la vie initiale
+        };
+      });
+
+      // Fonction pour afficher un bouclier semi-transparent pendant la défense
+      function displayShield(character) {
+        const charContainer = character.element;
+
+        // Créer l'élément pour le bouclier
+        const shield = document.createElement('img');
+        shield.src = 'bouclier64.png';
+        shield.style.position = 'absolute';
+        shield.style.left = '50%';  // Centrer horizontalement par rapport au personnage
+        shield.style.top = '40%';   // Centrer verticalement par rapport au personnage
+        shield.style.transform = 'translate(-50%, -50%) scale(0)';  // Commencer avec une petite taille
+        shield.style.opacity = '0';  // Commencer invisible
+        shield.style.zIndex = '10';  // S'assurer que le bouclier est au-dessus du personnage
+        shield.style.transition = 'opacity 1s, transform 1s';  // Transition pour l'apparition et le grossissement
+
+        charContainer.appendChild(shield);
+
+        // Ajouter un léger délai avant de commencer l'animation
+        setTimeout(() => {
+          // Appliquer l'animation : faire grossir le bouclier et augmenter l'opacité
+          shield.style.opacity = '0.5';  // Rendre semi-transparent
+          shield.style.transform = 'translate(-50%, -50%) scale(1)';  // Augmenter la taille à sa taille finale
+        }, 10); // Légère attente pour que la transition soit bien appliquée
+
+      }
+
+      // Fonction pour retirer le bouclier
+      function removeShield(character) {
+        const charContainer = character.element;
+
+        // Trouver l'image du bouclier dans le conteneur du personnage
+        const shield = charContainer.querySelector('img[src="bouclier64.png"]');
+
+        if (shield) {
+          // Appliquer une animation pour réduire la taille et diminuer l'opacité
+          shield.style.opacity = '0';  // Rendre complètement transparent
+          shield.style.transform = 'translate(-50%, -50%) scale(0)';  // Réduire la taille à zéro
+
+          // Supprimer l'élément du DOM après l'animation
+          setTimeout(() => shield.remove(), 1000); // Suppression après 1 seconde
+        }
+      }
+
+      function displayPass(character) {
+        const charContainer = character.element;
+
+        // Créer l'élément pour la fleche
+        const fleche = document.createElement('img');
+        fleche.src = 'fleche64.png';
+        fleche.style.position = 'absolute';
+        fleche.style.left = '50%';  // Centrer horizontalement par rapport au personnage
+        fleche.style.top = '40%';   // Centrer verticalement par rapport au personnage
+        fleche.style.transform = 'translate(-50%, -50%) scale(0)';  // Commencer avec une petite taille
+        fleche.style.opacity = '0';  // Commencer invisible
+        fleche.style.zIndex = '10';  // S'assurer que le fleche est au-dessus du personnage
+        fleche.style.transition = 'opacity 1s, transform 1s';  // Transition pour l'apparition et le grossissement
+
+        charContainer.appendChild(fleche);
+
+        // Ajouter un léger délai avant de commencer l'animation
+        setTimeout(() => {
+          // Appliquer l'animation : faire grossir le bouclier et augmenter l'opacité
+          fleche.style.opacity = '0.5';  // Rendre semi-transparent
+          fleche.style.transform = 'translate(-50%, -50%) scale(1)';  // Augmenter la taille à sa taille finale
+        }, 10); // Légère attente pour que la transition soit bien appliquée
+
+        //suprime
+        setTimeout(() => {
+          fleche.style.opacity = '0';  // Rendre l'image totalement transparente
+          fleche.style.transform = 'translate(-50%, -50%) scale(0)';  // Réduire la taille à zéro
+          setTimeout(() => fleche.remove(), 1000);  // Supprimer l'image après la transition
+        }, 1000);
+
+      }
+
+      function displayRound(currentTurn, delay) {
+        setTimeout(() => {
+          // Mettre à jour le texte au centre de l'arène
+          const arenaTextElement = document.getElementById('arena-text');
+          if (arenaTextElement) {
+            arenaTextElement.textContent = `Round ${currentTurn}`;
+            arenaTextElement.style.transition = 'opacity 0.5s';
+            arenaTextElement.style.opacity = '1'; // Apparition complète
+
+            // Réduire et faire disparaître le texte après un délai
+            setTimeout(() => {
+              arenaTextElement.style.opacity = '0'; // Disparition
+            }, 1000);
+          }
+        }, delay);
+      }
+
+      async function updateActions() {
+        displayRound(1)
+        const N = allData.enter_arena.length; // Nombre de joueurs par bloc
+        let actionsCount = 0;
+        let currentTurn = 1;
+
+        // Diviser les actions en blocs de N joueurs
+        let actionsBlocks = [];
+        let currentBlock = [];
+
+        for (const [timestamp, actionData] of allData.set_action) {
+          currentBlock.push(actionData);
+
+          // Si le bloc atteint N actions, on le stocke et on recommence un nouveau bloc
+          if (currentBlock.length === N) {
+            actionsBlocks.push(currentBlock);
+            currentBlock = [];
+          }
+        }
+
+        // Ajouter le dernier bloc s'il reste des actions non traitées
+        if (currentBlock.length > 0) {
+          actionsBlocks.push(currentBlock);
+        }
+
+        // Parcourir les blocs d'actions
+        for (let block of actionsBlocks) {
+          // Trier les actions du bloc par speed (plus la speed est élevée, plus l'action est prioritaire)
+          block.sort((a, b) => b.speed - a.speed);
+
+          // Exécuter les actions dans l'ordre du speed
+          for (const actionData of block) {
+            const { cid, action } = actionData;
+            console.log(actionData);
+
+            const character = charContainers[cid];
+            if (character) {
+              // Récupérer la cible depuis set_target
+              const targetCid = allData.set_target.find(target => target[1].cid === cid)?.[1].target;
+              const targetCharacter = charContainers[targetCid];
+
+              // Si une action est définie, déterminer l'action à effectuer
+              switch (actions[action]) {
+                case 'Attaque':
+                  console.log(actionData.cid + ' attaque ' + targetCid);
+                  if (targetCharacter) {
+                    // Appel de la méthode de déplacement pour attaquer la cible
+                    moveToTargetAndBack(character, targetCharacter);
+
+                    // Chercher les dégâts infligés entre les personnages
+                    const damageData = allData.damage.find(damageEntry => {
+                      return (damageEntry[1].character === cid && damageEntry[1].target === targetCid);
+                    });
+                    console.log(damageData);
+
+                    if (damageData) {
+                      const { damage, reduced, dodged } = damageData[1];
+                      // Afficher les dégâts
+                      displayDamage(character, targetCharacter, damage, reduced, dodged);
+                    }
+                  }
+                  // Si le joueur attaque, on retire son bouclier (s'il en a un)
+                  removeShield(targetCharacter);
+                  break;
+                case 'Défense':
+                  console.log(actionData.cid + ' se defend');
+                  // Afficher un bouclier semi-transparent pendant la défense
+                  displayShield(character);
+                  break;
+                case 'Aucune':
+                  console.log(actionData.cid + ' ne fait rien');
+                  //affiche passe son tour
+                  displayPass(character)
+                  break;
+              }
+            }
+
+            actionsCount++; // Incrémenter le compteur d'actions après chaque action
+
+            console.log(actionsCount  + " / " + N);
+            
+            if (actionsCount === N) {
+              currentTurn++;
+             
+              // Mettre à jour l'affichage du compteur de tours
+              const turnCounterElement = document.getElementById('turn-counter');
+              if (turnCounterElement) {
+                turnCounterElement.textContent = `Tour : ${currentTurn}`;
+              }
+
+              document.getElementById('turn').textContent = `Tour : ${currentTurn}`;
+              actionsCount = 0;
+
+              displayRound(currentTurn, 500)
+
+              Object.values(charContainers).forEach(character => {
+                  removeShield(character);
+              });
+              await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+
+            await new Promise(resolve => setTimeout(resolve, 1000)); // Attendre 1 seconde avant de passer à l'action suivante
+          }
+        }
+      }
+
+
+      // Fonction pour afficher les dégâts
+      function displayDamage(attacker, defender, damage, reduced, dodged) {
+        let totalDamage = damage;
+
+        // Mettre à jour la barre de vie après avoir reçu des dégâts
+        defender.character.life -= totalDamage;
+        const healthPercentage = defender.character.life / defender.initialLife;
+
+        // Mettre à jour la largeur de la barre de vie
+        defender.healthBar.querySelector('.health-bar-inner').style.width = `${healthPercentage * 100}%`;
+
+        // Changer la couleur de la barre de vie en fonction de la santé restante
+        let color;
+        if (healthPercentage <= 0.3) {
+          color = 'red';
+        } else if (healthPercentage <= 0.7) {
+          color = 'yellow';
+        } else {
+          color = 'green';
+        }
+
+        defender.healthBar.querySelector('.health-bar-inner').style.backgroundColor = color;
+
+        // Afficher le texte des dégâts encaissés en rouge au-dessus du personnage
+        const damageText = document.createElement('div');
+        damageText.textContent = `-${totalDamage}`;
+        damageText.style.position = 'absolute';
+        damageText.style.top = '0px';  // Positionner un peu au-dessus du personnage
+        damageText.style.left = '50%';
+        damageText.style.transform = 'translateX(-50%)';
+        damageText.style.color = 'red';
+        damageText.style.fontSize = '16px';
+        damageText.style.fontWeight = 'bold';
+        damageText.style.zIndex = '20';  // S'assurer qu'il est au-dessus du personnage
+
+        defender.element.appendChild(damageText);
+
+        // Supprimer le texte après quelques secondes
+        setTimeout(() => {
+          damageText.remove();
+        }, 1500); // 1.5 seconde
+      }
+
+
+      // Déplacer le personnage vers la cible et revenir
+      function moveToTargetAndBack(character, targetCharacter) {
+        const charContainer = character.element;
+        const initialPosition = character.position;
+
+        // Obtenir la position cible
+        const targetPosition = targetCharacter.position;
+
+        // Déplacer le personnage vers la position cible
+        charContainer.style.left = `${targetPosition.x}px`;
+        charContainer.style.top = `${targetPosition.y}px`;
+
+        // Revenir à la position initiale après une pause
+        setTimeout(() => {
+          charContainer.style.left = `${initialPosition.x}px`;
+          charContainer.style.top = `${initialPosition.y}px`;
+        }, 400); // Temps avant de revenir
+      }
+
+
+      // Mettre à jour les actions et cibles
+      updateActions();
+    }
+
+    // Charger les données au démarrage
+    loadData();
+  </script>
+</body>
+</html>
