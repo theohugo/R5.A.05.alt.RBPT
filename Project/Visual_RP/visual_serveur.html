@@ -364,14 +364,6 @@
           fleche.style.opacity = '0.8';  // Rendre semi-transparent
           fleche.style.transform = 'translate(-50%, -50%) scale(1)';  // Augmenter la taille à sa taille finale
         }, 10); // Légère attente pour que la transition soit bien appliquée
-
-        // //suprime
-        // setTimeout(() => {
-        //   fleche.style.opacity = '0';  // Rendre l'image totalement transparente
-        //   fleche.style.transform = 'translate(-50%, -50%) scale(0)';  // Réduire la taille à zéro
-        //   setTimeout(() => fleche.remove(), 1000);  // Supprimer l'image après la transition
-        // }, 1000);
-
       }
 
       // Fonction pour retirer le bouclier
@@ -414,6 +406,42 @@
         const charContainer = character.element;
         //suprimer
         charContainer.remove();
+      }
+
+      // Fonction pour vérifier si un personnage est mort
+      function checkIfCharacterIsDead(targetCharacter, deathData) {
+        // Chercher dans le tableau des morts si le personnage est dans la liste des tués
+        const deathEntry = deathData.find(entry => entry[1].character === targetCharacter.character.cid);
+        if (deathEntry) {
+          return true
+        } else {
+          return false
+        }
+      }
+
+      function DisplayDeath(character) {
+        const charContainer = character.element;
+
+        // Créer l'élément pour la mort
+        const fleche = document.createElement('img');
+        fleche.src = 'death64.png';
+        fleche.style.position = 'absolute';
+        fleche.style.left = '50%';  // Centrer horizontalement par rapport au personnage
+        fleche.style.top = '30%';   // Centrer verticalement par rapport au personnage
+        fleche.style.transform = 'translate(-50%, -50%) scale(0)';  // Commencer avec une petite taille
+        fleche.style.opacity = '0';  // Commencer invisible
+        fleche.style.zIndex = '10';  // S'assurer que le fleche est au-dessus du personnage
+        fleche.style.transition = 'opacity 1s, transform 1s';  // Transition pour l'apparition et le grossissement
+
+        charContainer.appendChild(fleche);
+
+        // Ajouter un léger délai avant de commencer l'animation
+        setTimeout(() => {
+          // Appliquer l'animation : faire grossir le bouclier et augmenter l'opacité
+          fleche.style.opacity = '0.8';  // Rendre semi-transparent
+          fleche.style.transform = 'translate(-50%, -50%) scale(1)';  // Augmenter la taille à sa taille finale
+        }, 10); // Légère attente pour que la transition soit bien appliquée
+
       }
 
       async function updateActions() {
@@ -474,12 +502,16 @@
                     if (damageData) {
                       const { damage, reduced, dodged } = damageData[1];
                       // Afficher les dégâts
-                      displayDamage(character, targetCharacter, damage, reduced, dodged);
+                      isdead = displayDamage(character, targetCharacter, damage, reduced, dodged);
                     }
                   }
                   // Si le joueur attaque, on retire son bouclier (s'il en a un)
                   removeShield(targetCharacter);
                   removeEsquive(targetCharacter);
+                  //verifi si la target est morte
+                  if (checkIfCharacterIsDead(targetCharacter, allData.death) && isdead) {
+                    DisplayDeath(targetCharacter)
+                  }
                   break;
                 case 'Défense':
                   console.log(actionData.cid + ' se defend');
@@ -532,12 +564,11 @@
       }
 
 
-      // Fonction pour afficher les dégâts
       function displayDamage(attacker, defender, damage, reduced, dodged) {
         let totalDamage = damage;
 
-        // Mettre à jour la barre de vie après avoir reçu des dégâts
-        defender.character.life -= totalDamage;
+        // Calculer les dégâts réels à infliger, en s'assurant que la vie ne tombe pas en dessous de 0
+        defender.character.life = Math.max(defender.character.life - totalDamage, 0);
         const healthPercentage = defender.character.life / defender.initialLife;
 
         // Mettre à jour la largeur de la barre de vie
@@ -546,11 +577,11 @@
         // Changer la couleur de la barre de vie en fonction de la santé restante
         let color;
         if (healthPercentage <= 0.3) {
-          color = 'red';
+            color = 'red';
         } else if (healthPercentage <= 0.7) {
-          color = 'yellow';
+            color = 'yellow';
         } else {
-          color = 'green';
+            color = 'green';
         }
 
         defender.healthBar.querySelector('.health-bar-inner').style.backgroundColor = color;
@@ -571,9 +602,16 @@
 
         // Supprimer le texte après quelques secondes
         setTimeout(() => {
-          damageText.remove();
+            damageText.remove();
         }, 1500); // 1.5 seconde
-      }
+
+        // Vérifier si la vie du défenseur est à 0 et renvoyer true
+        if (defender.character.life === 0) {
+            return true;
+        }
+    }
+
+
 
 
       // Déplacer le personnage vers la cible et revenir
