@@ -150,9 +150,9 @@ def action_arena(cid, action_id, target_id):
         return jsonify({"error": f"Action ID {action_id} non valide"}), 400
 
     # Appliquer l'action et vérifier si une cible est requise
-    dataCharacter.setAction(action)
+    current_app.engine.setActionTo(cid, action_id)
     if action in [ACTION.HIT, ACTION.BLOCK, ACTION.DODGE, ACTION.FLY]:
-        dataCharacter.setTarget(dataTarget.getId())
+        current_app.engine.setTargetTo(cid, target_id)
 
     return jsonify({
         "message": f"Action '{actionToStr(action)}' définie pour {cid} sur cible {target_id}.",
