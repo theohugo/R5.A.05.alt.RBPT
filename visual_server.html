@@ -28,6 +28,7 @@
             background-color: #fff;
             padding: 15px;
             border-radius: 8px;
+            box-sizing: border-box;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             width: 48%;
             margin-bottom: 20px;
@@ -92,6 +93,7 @@
             background-color: #fff;
             padding: 15px;
             border-radius: 8px;
+            box-sizing: border-box;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             max-height: 300px;
             overflow-y: auto;
@@ -220,39 +222,37 @@
             });
         }
 
-        // Fonction pour mettre à jour les actions et les cibles
+        // Fonction pour mettre à jour les personnages avec les dégâts et les morts
         function updateCharacters(gameData) {
-            // Mettre à jour les actions
-            gameData.set_action.forEach(event => {
-                const [timestamp, data] = event;
-                if (characters[data.cid]) {
-                    characters[data.cid].action = data.action;
-                    characters[data.cid].life = data.life;
-                }
-            });
-
-            // Mettre à jour les cibles
-            gameData.set_target.forEach(event => {
-                const [timestamp, data] = event;
-                if (characters[data.cid]) {
-                    characters[data.cid].target = data.target;
-                    characters[data.cid].life = data.life;
-                }
-            });
-
             // Mettre à jour les dégâts
-            gameData.damage.forEach(event => {
-                const [timestamp, data] = event;
-                if (characters[data.character] && characters[data.target]) {
-                    // Appliquer les dégâts au personnage cible
-                    const actualDamage = data.damage - data.reduced;
-                    characters[data.target].life -= actualDamage;
-                    if (characters[data.target].life <= 0) {
-                        characters[data.target].dead = true;
-                        characters[data.target].life = 0;
+            if (gameData.damage) {
+                gameData.damage.forEach(event => {
+                    const [timestamp, data] = event;
+                    if (characters[data.character] && characters[data.target]) {
+                        // Appliquer les dégâts au personnage cible
+                        const actualDamage = data.damage - data.reduced;
+                        characters[data.target].life -= actualDamage;
+                        if (characters[data.target].life <= 0) {
+                            characters[data.target].dead = true;
+                            characters[data.target].life = 0;
+                        }
+                        // Mettre à jour l'action et la cible pour le personnage
+                        characters[data.character].action = 'Attaque';
+                        characters[data.character].target = data.target;
                     }
-                }
-            });
+                });
+            }
+
+            // Mettre à jour les décès
+            if (gameData.death) {
+                gameData.death.forEach(event => {
+                    const [timestamp, data] = event;
+                    if (characters[data.character]) {
+                        characters[data.character].dead = true;
+                        characters[data.character].life = 0;
+                    }
+                });
+            }
         }
 
         // Fonction pour afficher les personnages dans les équipes
@@ -262,20 +262,15 @@
             // Récupérer tous les teamids présents
             const teamIds = [...new Set(Object.values(characters).map(char => char.teamid))];
 
-            // Limiter à 4 équipes
-            const limitedTeamIds = teamIds.slice(0, 4);
-
             // Créer un objet pour stocker les équipes et leurs personnages
             const teams = {};
-            limitedTeamIds.forEach(teamId => {
+            teamIds.forEach(teamId => {
                 teams[teamId] = [];
             });
 
             // Assigner les personnages à leurs équipes respectives
             Object.values(characters).forEach(character => {
-                if (teams[character.teamid]) {
-                    teams[character.teamid].push(character);
-                }
+                teams[character.teamid].push(character);
             });
 
             // Vider le conteneur avant d'ajouter les équipes
@@ -384,7 +379,6 @@
             const turns = gameData.turn_id.map(turn => ({
                 turnNumber: turn[1],
                 timestamp: turn[0],
-                actions: {}, // Actions et cibles combinées
                 damage: []
             }));
 
@@ -394,41 +388,16 @@
                 turn.end = (index < turns.length - 1) ? turns[index + 1].timestamp : Infinity;
             });
 
-            // Assigner les événements set_action aux tours
-            gameData.set_action.forEach(event => {
-                const [timestamp, data] = event;
-                const turn = turns.find(t => timestamp >= t.start && timestamp < t.end);
-                if (turn) {
-                    if (!turn.actions[data.cid]) {
-                        turn.actions[data.cid] = { action: data.action, target: data.target || 'Aucune' };
-                    } else {
-                        turn.actions[data.cid].action = data.action;
-                        turn.actions[data.cid].target = data.target || 'Aucune';
-                    }
-                }
-            });
-
-            // Assigner les événements set_target aux tours
-            gameData.set_target.forEach(event => {
-                const [timestamp, data] = event;
-                const turn = turns.find(t => timestamp >= t.start && timestamp < t.end);
-                if (turn) {
-                    if (!turn.actions[data.cid]) {
-                        turn.actions[data.cid] = { action: 'Aucune', target: data.target };
-                    } else {
-                        turn.actions[data.cid].target = data.target;
-                    }
-                }
-            });
-
             // Assigner les événements damage aux tours
-            gameData.damage.forEach(event => {
-                const [timestamp, data] = event;
-                const turn = turns.find(t => timestamp >= t.start && timestamp < t.end);
-                if (turn) {
-                    turn.damage.push(data);
-                }
-            });
+            if (gameData.damage) {
+                gameData.damage.forEach(event => {
+                    const [timestamp, data] = event;
+                    const turn = turns.find(t => timestamp >= t.start && timestamp < t.end);
+                    if (turn) {
+                        turn.damage.push(data);
+                    }
+                });
+            }
 
             // Trier les tours par numéro décroissant pour afficher les plus récents en premier
             const sortedTurns = [...turns].sort((a, b) => b.turnNumber - a.turnNumber);
@@ -447,25 +416,6 @@
                 const detailsDiv = document.createElement('div');
                 detailsDiv.classList.add('turn-details');
 
-                // Créer la liste combinée des actions et cibles
-                const actionsList = document.createElement('ul');
-                actionsList.classList.add('action-list');
-
-                const actionsHeader = document.createElement('p');
-                actionsHeader.innerHTML = `<strong>Actions des Personnages :</strong>`;
-                detailsDiv.appendChild(actionsHeader);
-
-                for (const [cid, actionData] of Object.entries(turn.actions)) {
-                    const actionItem = document.createElement('li');
-                    const actionText = `${cid} -> ${actionToString(actionData.action)} -> ${actionData.target}`;
-                    actionItem.textContent = actionText;
-                    actionsList.appendChild(actionItem);
-                }
-
-                if (Object.keys(turn.actions).length > 0) {
-                    detailsDiv.appendChild(actionsList);
-                }
-
                 // Remplir la liste des dégâts
                 if (turn.damage.length > 0) {
                     const damageHeader = document.createElement('p');
@@ -483,10 +433,7 @@
                     });
 
                     detailsDiv.appendChild(damageList);
-                }
-
-                // Si aucun détail n'est disponible, afficher un message
-                if (Object.keys(turn.actions).length === 0 && turn.damage.length === 0) {
+                } else {
                     const noDetailsP = document.createElement('p');
                     noDetailsP.textContent = `Aucun détail disponible pour ce tour.`;
                     detailsDiv.appendChild(noDetailsP);
@@ -522,11 +469,12 @@
         async function fetchDataAndUpdate() {
             try {
                 // Charger les données depuis data.json
-                const response = await fetch(`data.json?t=${new Date().getTime()}`); // Ajout d'un timestamp pour éviter le cache
+                const response = await fetch(`./Project/Engine/log/data.json?t=${new Date().getTime()}`); // Ajout d'un timestamp pour éviter le cache
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 const gameData = await response.json();
+                console.log(gameData);
 
                 // Initialiser les personnages (uniquement la première fois)
                 initializeCharacters(gameData);
