@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Visualisation du Jeu</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .team {
+            width: 48%;
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .team h2 {
+            text-align: center;
+            color: #555;
+        }
+
+        .character {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            background-color: #fafafa;
+        }
+
+        .character:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .sprite {
+            width: 64px; /* Largeur du sprite */
+            height: 64px; /* Hauteur du sprite */
+            background-image: url('sprite.webp');
+            background-size: cover;
+            position: relative; /* Pour positionner l'overlay */
+            margin-right: 15px;
+            flex-shrink: 0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .sprite-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 0, 0, 0); /* Rouge transparent par défaut */
+            transition: background-color 0.3s ease;
+        }
+
+        .character-info {
+            flex-grow: 1;
+        }
+
+        .character-info p {
+            margin: 5px 0;
+        }
+
+        .health-bar {
+            width: 100%;
+            background-color: #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+            height: 10px;
+            margin-top: 5px;
+        }
+
+        .health-bar-inner {
+            height: 100%;
+            background-color: #4caf50;
+            width: 100%;
+        }
+
+        .log {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .log h2 {
+            text-align: center;
+            color: #555;
+        }
+
+        .log-entry {
+            border-bottom: 1px solid #eee;
+            padding: 5px 0;
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .team {
+                width: 100%;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Visualisation du Jeu</h1>
+
+    <div class="container">
+        <div class="team" id="teamA">
+            <h2>Équipe A</h2>
+            <div id="teamA-characters">
+                <!-- Personnages de l'équipe A seront affichés ici -->
+            </div>
+        </div>
+        <div class="team" id="teamB">
+            <h2>Équipe B</h2>
+            <div id="teamB-characters">
+                <!-- Personnages de l'équipe B seront affichés ici -->
+            </div>
+        </div>
+    </div>
+
+    <div class="log">
+        <h2>Journal des Actions</h2>
+        <div id="action-log">
+            <!-- Les actions seront affichées ici -->
+        </div>
+    </div>
+
+    <script>
+        // Vos données JSON
+        const gameData = {
+            "enter_arena": [
+                [1694181444.3692462, {"cid": "962", "teamid": "B", "life": 14, "strength": 1, "armor": 5, "speed": 0, "action": "None", "target": "None", "dead": false}],
+                [1694181444.372623, {"cid": "774", "teamid": "B", "life": 3, "strength": 15, "armor": 5, "speed": 2, "action": "None", "target": "None", "dead": false}],
+                [1694181444.372623, {"cid": "774", "teamid": "C", "life": 3, "strength": 15, "armor": 5, "speed": 2, "action": "None", "target": "None", "dead": false}],
+                [1694181444.3746595, {"cid": "723", "teamid": "A", "life": 10, "strength": 4, "armor": 4, "speed": 2, "action": "None", "target": "None", "dead": false}],
+                [1694181444.3767238, {"cid": "613", "teamid": "A", "life": 8, "strength": 4, "armor": 4, "speed": 4, "action": "None", "target": "None", "dead": false}]
+            ],
+            "gold": [
+                [1694181444.3692474, {"962": 0}],
+                [1694181444.372624, {"774": 0}],
+                [1694181444.374661, {"723": 0}],
+                [1694181444.3767247, {"613": 0}]
+            ],
+            "set_action": [
+                [1694181444.3813837, {"cid": "723", "teamid": "A", "life": 10, "strength": 4, "armor": 4, "speed": 2, "action": "2", "target": "None", "dead": false}],
+                [1694181444.383202, {"cid": "962", "teamid": "B", "life": 14, "strength": 1, "armor": 5, "speed": 0, "action": "1", "target": "None", "dead": false}],
+                [1694181444.3850749, {"cid": "613", "teamid": "A", "life": 8, "strength": 4, "armor": 4, "speed": 4, "action": "0", "target": "None", "dead": false}],
+                [1694181444.3869474, {"cid": "774", "teamid": "B", "life": 3, "strength": 15, "armor": 5, "speed": 2, "action": "2", "target": "None", "dead": false}],
+                [1694181449.405404, {"cid": "723", "teamid": "A", "life": 10, "strength": 4, "armor": 4, "speed": 2, "action": "1", "target": "None", "dead": false}],
+                [1694181449.413812, {"cid": "962", "teamid": "B", "life": 10, "strength": 1, "armor": 5, "speed": 0, "action": "0", "target": "None", "dead": false}],
+                [1694181449.4205492, {"cid": "613", "teamid": "A", "life": 8, "strength": 4, "armor": 4, "speed": 4, "action": "1", "target": "None", "dead": false}],
+                [1694181449.4227233, {"cid": "774", "teamid": "B", "life": 3, "strength": 15, "armor": 5, "speed": 2, "action": "1", "target": "None", "dead": false}],
+                [1694181454.4426537, {"cid": "723", "teamid": "A", "life": 7, "strength": 4, "armor": 4, "speed": 2, "action": "0", "target": "None", "dead": false}],
+                [1694181454.45049, {"cid": "962", "teamid": "B", "life": 10, "strength": 1, "armor": 5, "speed": 0, "action": "1", "target": "None", "dead": false}],
+                [1694181454.4547951, {"cid": "613", "teamid": "A", "life": 8, "strength": 4, "armor": 4, "speed": 4, "action": "2", "target": "None", "dead": false}],
+                [1694181454.456919, {"cid": "774", "teamid": "B", "life": 3, "strength": 15, "armor": 5, "speed": 2, "action": "1", "target": "None", "dead": false}]
+            ],
+            "set_target": [
+                [1694181444.388817, {"cid": "723", "teamid": "A", "life": 10, "strength": 4, "armor": 4, "speed": 2, "action": "2", "target": "774", "dead": false}],
+                [1694181444.3905747, {"cid": "613", "teamid": "A", "life": 8, "strength": 4, "armor": 4, "speed": 4, "action": "0", "target": "962", "dead": false}],
+                [1694181444.3922474, {"cid": "962", "teamid": "B", "life": 14, "strength": 1, "armor": 5, "speed": 0, "action": "1", "target": "613", "dead": false}],
+                [1694181444.3939118, {"cid": "774", "teamid": "B", "life": 3, "strength": 15, "armor": 5, "speed": 2, "action": "2", "target": "613", "dead": false}],
+                [1694181449.4247785, {"cid": "723", "teamid": "A", "life": 10, "strength": 4, "armor": 4, "speed": 2, "action": "1", "target": "774", "dead": false}],
+                [1694181449.4267075, {"cid": "613", "teamid": "A", "life": 8, "strength": 4, "armor": 4, "speed": 4, "action": "1", "target": "962", "dead": false}],
+                [1694181449.428584, {"cid": "962", "teamid": "B", "life": 10, "strength": 1, "armor": 5, "speed": 0, "action": "0", "target": "723", "dead": false}],
+                [1694181449.4303176, {"cid": "774", "teamid": "B", "life": 3, "strength": 15, "armor": 5, "speed": 2, "action": "1", "target": "613", "dead": false}],
+                [1694181454.4587274, {"cid": "723", "teamid": "A", "life": 7, "strength": 4, "armor": 4, "speed": 2, "action": "0", "target": "962", "dead": false}],
+                [1694181454.460536, {"cid": "613", "teamid": "A", "life": 8, "strength": 4, "armor": 4, "speed": 4, "action": "2", "target": "774", "dead": false}],
+                [1694181454.46235, {"cid": "962", "teamid": "B", "life": 10, "strength": 1, "armor": 5, "speed": 0, "action": "1", "target": "723", "dead": false}],
+                [1694181454.464067, {"cid": "774", "teamid": "B", "life": 3, "strength": 15, "armor": 5, "speed": 2, "action": "1", "target": "613", "dead": false}]
+            ],
+            "start_game": [
+                [1694181445.381179, ""]
+            ],
+            "damage": [
+                [1694181445.3812664, {"character": "613", "target": "962", "damage": 4, "reduced": 0, "dodged": 0}],
+                [1694181450.3829827, {"character": "962", "target": "723", "damage": 3, "reduced": 4, "dodged": 0}],
+                [1694181455.3881948, {"character": "723", "target": "962", "damage": 4, "reduced": 0, "dodged": 0}]
+            ],
+            "turn_id": [
+                [1694181445.3812804, 1],
+                [1694181450.3830059, 2],
+                [1694181455.3882468, 3]
+            ]
+        };
+
+        // Objets pour stocker l'état des personnages
+        const characters = {};
+
+        // Paramètres de vie
+        const maxLife = 20; // Définir la vie maximale si nécessaire
+
+        // Fonction pour initialiser les personnages à partir des événements "enter_arena"
+        function initializeCharacters() {
+            gameData.enter_arena.forEach(event => {
+                const [timestamp, data] = event;
+                characters[data.cid] = { ...data };
+            });
+        }
+
+        // Fonction pour mettre à jour les actions et les cibles
+        function updateCharacters() {
+            // Mettre à jour les actions
+            gameData.set_action.forEach(event => {
+                const [timestamp, data] = event;
+                if (characters[data.cid]) {
+                    characters[data.cid].action = data.action;
+                    characters[data.cid].life = data.life;
+                }
+            });
+
+            // Mettre à jour les cibles
+            gameData.set_target.forEach(event => {
+                const [timestamp, data] = event;
+                if (characters[data.cid]) {
+                    characters[data.cid].target = data.target;
+                    characters[data.cid].life = data.life;
+                }
+            });
+
+            // Mettre à jour les dégâts
+            gameData.damage.forEach(event => {
+                const [timestamp, data] = event;
+                if (characters[data.character] && characters[data.target]) {
+                    // Appliquer les dégâts au personnage cible
+                    const actualDamage = data.damage - data.reduced;
+                    characters[data.target].life -= actualDamage;
+                    if (characters[data.target].life <= 0) {
+                        characters[data.target].dead = true;
+                        characters[data.target].life = 0;
+                    }
+                }
+            });
+        }
+
+        // Fonction pour afficher les personnages dans les équipes
+        function displayCharacters() {
+            const teamAContainer = document.getElementById('teamA-characters');
+            const teamBContainer = document.getElementById('teamB-characters');
+
+            // Vider les conteneurs
+            teamAContainer.innerHTML = '';
+            teamBContainer.innerHTML = '';
+
+            Object.values(characters).forEach(character => {
+                const charDiv = document.createElement('div');
+                charDiv.classList.add('character');
+
+                // Div pour le sprite
+                const spriteDiv = document.createElement('div');
+                spriteDiv.classList.add('sprite');
+
+                // Ajouter l'overlay rouge
+                const overlayDiv = document.createElement('div');
+                overlayDiv.classList.add('sprite-overlay');
+
+                // Calculer l'opacité de l'overlay en fonction de la vie
+                const opacity = Math.min(Math.max((maxLife - character.life) / maxLife, 0), 1);
+                overlayDiv.style.backgroundColor = `rgba(255, 0, 0, ${opacity})`;
+
+                spriteDiv.appendChild(overlayDiv);
+                charDiv.appendChild(spriteDiv);
+
+                const infoDiv = document.createElement('div');
+                infoDiv.classList.add('character-info');
+
+                const name = document.createElement('p');
+                name.innerHTML = `<strong>ID:</strong> ${character.cid}`;
+                infoDiv.appendChild(name);
+
+                const life = document.createElement('p');
+                life.innerHTML = `<strong>Vie:</strong> ${character.life}`;
+                infoDiv.appendChild(life);
+
+                const strength = document.createElement('p');
+                strength.innerHTML = `<strong>Force:</strong> ${character.strength}`;
+                infoDiv.appendChild(strength);
+
+                const armor = document.createElement('p');
+                armor.innerHTML = `<strong>Armure:</strong> ${character.armor}`;
+                infoDiv.appendChild(armor);
+
+                const speed = document.createElement('p');
+                speed.innerHTML = `<strong>Vitesse:</strong> ${character.speed}`;
+                infoDiv.appendChild(speed);
+
+                const action = document.createElement('p');
+                action.innerHTML = `<strong>Action:</strong> ${actionToString(character.action)}`;
+                infoDiv.appendChild(action);
+
+                const target = document.createElement('p');
+                target.innerHTML = `<strong>Cible:</strong> ${character.target || 'Aucune'}`;
+                infoDiv.appendChild(target);
+
+                // Barre de vie
+                const healthBar = document.createElement('div');
+                healthBar.classList.add('health-bar');
+                const healthInner = document.createElement('div');
+                healthInner.classList.add('health-bar-inner');
+                const healthPercentage = (character.life / maxLife) * 100; // Calcul de la vie en pourcentage
+                healthInner.style.width = `${healthPercentage}%`;
+                healthBar.appendChild(healthInner);
+                infoDiv.appendChild(healthBar);
+
+                // Indicateur de mort
+                if (character.dead) {
+                    const deadIndicator = document.createElement('p');
+                    deadIndicator.style.color = 'red';
+                    deadIndicator.innerHTML = `<strong>État:</strong> Mort`;
+                    infoDiv.appendChild(deadIndicator);
+                }
+
+                charDiv.appendChild(infoDiv);
+
+                // Ajouter à la bonne équipe
+                if (character.teamid === 'A') {
+                    teamAContainer.appendChild(charDiv);
+                } else if (character.teamid === 'B') {
+                    teamBContainer.appendChild(charDiv);
+                }
+            });
+        }
+
+        // Fonction pour convertir l'action en texte lisible
+        function actionToString(action) {
+            const actions = {
+                "0": "Aucune",
+                "1": "Attaque",
+                "2": "Défense",
+                "None": "Aucune"
+            };
+            return actions[action] || action;
+        }
+
+        // Fonction pour afficher le journal des actions
+        function displayActionLog() {
+            const logContainer = document.getElementById('action-log');
+
+            // Vider le journal
+            logContainer.innerHTML = '';
+
+            // Combiner les différents logs
+            const combinedLogs = [];
+
+            // Ajouter les dégâts
+            gameData.damage.forEach(event => {
+                const [timestamp, data] = event;
+                combinedLogs.push({ timestamp, type: 'damage', data });
+            });
+
+            // Ajouter les tours
+            gameData.turn_id.forEach(event => {
+                const [timestamp, data] = event;
+                combinedLogs.push({ timestamp, type: 'turn', data });
+            });
+
+            // Trier les logs par timestamp
+            combinedLogs.sort((a, b) => a.timestamp - b.timestamp);
+
+            combinedLogs.forEach(entry => {
+                const entryDiv = document.createElement('div');
+                entryDiv.classList.add('log-entry');
+
+                if (entry.type === 'damage') {
+                    entryDiv.textContent = `Personnage ${entry.data.character} a infligé ${entry.data.damage} dégâts à ${entry.data.target}.`;
+                } else if (entry.type === 'turn') {
+                    entryDiv.textContent = `Tour ${entry.data}.`;
+                }
+
+                logContainer.appendChild(entryDiv);
+            });
+        }
+
+        // Fonction principale pour initialiser et afficher les données
+        function main() {
+            initializeCharacters();
+            updateCharacters();
+            displayCharacters();
+            displayActionLog();
+        }
+
+        // Appeler la fonction principale après le chargement de la page
+        window.onload = main;
+    </script>
+
+</body>
+</html>
