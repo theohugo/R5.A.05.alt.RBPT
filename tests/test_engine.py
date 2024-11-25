@@ -226,7 +226,7 @@ class TestEngineRealAPI(unittest.TestCase):
             # Afficher l'état des joueurs à la fin de chaque round
             self.display_round_status()
             print(f"=== Fin du Round {self.round_number} ===")
-            time.sleep(0.2)
+            time.sleep(1)
 
         
         # Étape 3 : Récupérer le classement individuel et par équipe

@@ -2,7 +2,7 @@ from random import randint
 from Project.Engine.action import *
 
 class CharacterProxy:
-    def __init__(self, cid: str, teamid: str, life: int, strength: int, armor: int, speed: int, _arena_id: int, name: str = None):
+    def __init__(self, cid: str, teamid: str, life: int, strength: int, armor: int, speed: int, arena_id: int, name: str = None):
         self._id = cid
         self._teamid = teamid
         self._name = name if name else cid 
@@ -10,7 +10,7 @@ class CharacterProxy:
         self._strength = strength
         self._armor = armor
         self._speed = speed
-        self._arena_id = _arena_id
+        self._arena_id = arena_id
         self._action = None
         self._target = None
         self._dead = False
