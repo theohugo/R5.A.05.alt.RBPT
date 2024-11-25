@@ -85,7 +85,6 @@
         .health-bar-inner {
             height: 100%;
             width: 100%;
-            /* La couleur sera définie dynamiquement via JavaScript */
             transition: width 0.3s ease, background-color 0.3s ease;
         }
 
@@ -107,7 +106,7 @@
 
         .log-entry {
             border-bottom: 1px solid #eee;
-            padding: 5px 0;
+            padding: 10px 0;
         }
 
         .log-entry:last-child {
@@ -116,61 +115,33 @@
 
         .turn-details {
             margin-top: 5px;
-            padding-left: 10px;
-            border-left: 2px solid #007BFF;
-            display: none;
         }
 
-        .turn-button {
-            background: none;
-            border: none;
-            color: #007BFF;
-            cursor: pointer;
-            padding: 0;
-            font-size: 1em;
-            text-align: left;
-            width: 100%;
+        /* Styles pour les tableaux */
+        .health-tables, .damage-tables {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
-        .turn-button:hover {
-            text-decoration: underline;
-        }
-
-        /* Styles pour les listes en mode flèche */
-        .action-list, .target-list, .damage-list {
-            list-style-type: none;
-            padding-left: 0;
-            margin: 5px 0;
-        }
-
-        .action-list li, .target-list li, .damage-list li {
-            margin: 3px 0;
-        }
-
-        .arrow {
-            display: inline-block;
-            margin: 0 5px;
-            color: #007BFF;
-        }
-
-        /* Styles pour le tableau des points de vie */
-        .health-table {
+        .health-table, .damage-table {
             width: 100%;
             max-width: 250px; /* Limite la largeur du tableau */
             table-layout: fixed; /* Utilise un layout de table fixe */
             border-collapse: collapse;
             margin-top: 10px;
+            margin-bottom: 10px;
         }
 
-        .health-table th, .health-table td {
+        .health-table th, .health-table td, .damage-table th, .damage-table td {
             border: 1px solid #ddd;
             padding: 5px;
             text-align: center;
-            width: 50%; /* Largeur fixe pour les colonnes */
-            word-wrap: break-word; /* Permet le retour à la ligne si le contenu est trop long */
+            width: 50%; /* Ajusté pour deux colonnes */
+            word-wrap: break-word;
         }
 
-        .health-table th {
+        .health-table th, .damage-table th {
             background-color: #f9f9f9;
         }
 
@@ -178,6 +149,9 @@
         @media (max-width: 1024px) {
             .team {
                 width: 100%;
+            }
+            .health-tables, .damage-tables {
+                flex-direction: column;
             }
         }
 
@@ -190,6 +164,16 @@
                 width: 100%;
                 margin-bottom: 20px;
             }
+        }
+
+        /* Style pour le curseur pointeur sur les titres cliquables */
+        .log-entry h3 {
+            cursor: pointer;
+        }
+
+        /* Les détails des tours sont cachés par défaut */
+        .turn-details {
+            display: none;
         }
     </style>
 </head>
@@ -215,6 +199,9 @@
         // Objets pour stocker les snapshots des personnages à chaque tour
         const characterSnapshots = {};
 
+        // Objet pour stocker l'état ouvert/fermé de chaque tour
+        const openTurns = {};
+
         // Paramètres de vie
         const maxLife = 20; // Définir la vie maximale si nécessaire
 
@@ -223,17 +210,6 @@
             const percentage = life / maxLife;
             const hue = (percentage * 120).toString(10); // 120 (vert) à 0 (rouge)
             return `hsl(${hue}, 100%, 50%)`;
-        }
-
-        // Fonction pour convertir l'action en texte lisible
-        function actionToString(action) {
-            const actions = {
-                "0": "Aucune",
-                "1": "Attaque",
-                "2": "Défense",
-                "None": "Aucune"
-            };
-            return actions[action] || action;
         }
 
         // Fonction pour effectuer une copie profonde d'un objet
@@ -246,7 +222,7 @@
             characters = {}; // Réinitialiser les personnages
             gameData.enter_arena.forEach(event => {
                 const [timestamp, data] = event;
-                if (!characters[data.cid]) { // Éviter les doublons
+                if (!characters[data.cid]) {
                     characters[data.cid] = { ...data };
                 }
             });
@@ -254,71 +230,76 @@
 
         // Fonction pour mettre à jour les personnages et stocker les snapshots à chaque tour
         function processEvents(gameData) {
-            // Combiner tous les événements
+            // Initialiser les tours
+            const turns = gameData.turn_id.map(turn => ({
+                turnNumber: turn[1],
+                timestamp: turn[0],
+                events: []
+            }));
+
+            // Définir les plages de temps de chaque tour
+            turns.forEach((turn, index) => {
+                turn.start = turn.timestamp;
+                turn.end = (index < turns.length - 1) ? turns[index + 1].timestamp : Infinity;
+            });
+
+            // Collecter tous les événements
             const allEvents = [];
 
-            // Ajouter les événements de damage
+            // Ajouter les événements de type 'damage'
             if (gameData.damage) {
                 gameData.damage.forEach(event => {
-                    allEvents.push({ type: 'damage', timestamp: event[0], data: event[1] });
+                    const [timestamp, data] = event;
+                    allEvents.push({ type: 'damage', timestamp, data });
                 });
             }
 
-            // Ajouter les événements de death
+            // Ajouter les événements de type 'death'
             if (gameData.death) {
                 gameData.death.forEach(event => {
-                    allEvents.push({ type: 'death', timestamp: event[0], data: event[1] });
+                    const [timestamp, data] = event;
+                    allEvents.push({ type: 'death', timestamp, data });
                 });
             }
 
-            // Ajouter les événements de turn_id
-            if (gameData.turn_id) {
-                gameData.turn_id.forEach(event => {
-                    allEvents.push({ type: 'turn', timestamp: event[0], data: { turnNumber: event[1] } });
-                });
-            }
-
-            // Trier les événements par timestamp
-            allEvents.sort((a, b) => a.timestamp - b.timestamp);
-
-            let currentTurn = 0;
-
-            // Parcourir les événements
+            // Associer les événements aux tours correspondants
             allEvents.forEach(event => {
-                if (event.type === 'turn') {
-                    // Sauvegarder l'état des personnages à la fin du tour précédent
-                    if (currentTurn > 0) {
-                        characterSnapshots[currentTurn] = deepCopy(characters);
-                    }
-                    // Mettre à jour le tour courant
-                    currentTurn = event.data.turnNumber;
-                } else if (event.type === 'damage') {
-                    const data = event.data;
-                    if (characters[data.character] && characters[data.target]) {
-                        // Appliquer les dégâts au personnage cible
-                        const actualDamage = data.damage - data.reduced;
-                        characters[data.target].life -= actualDamage;
-                        if (characters[data.target].life <= 0) {
-                            characters[data.target].dead = true;
-                            characters[data.target].life = 0;
-                        }
-                        // Mettre à jour l'action et la cible pour le personnage
-                        characters[data.character].action = 'Attaque';
-                        characters[data.character].target = data.target;
-                    }
-                } else if (event.type === 'death') {
-                    const data = event.data;
-                    if (characters[data.character]) {
-                        characters[data.character].dead = true;
-                        characters[data.character].life = 0;
-                    }
+                const turn = turns.find(t => event.timestamp >= t.start && event.timestamp < t.end);
+                if (turn) {
+                    turn.events.push(event);
                 }
             });
 
-            // Sauvegarder l'état des personnages à la fin du dernier tour
-            if (currentTurn > 0) {
-                characterSnapshots[currentTurn] = deepCopy(characters);
-            }
+            // Traiter les événements par tour
+            turns.forEach(turn => {
+                // Trier les événements du tour par timestamp
+                turn.events.sort((a, b) => a.timestamp - b.timestamp);
+
+                // Traiter chaque événement du tour
+                turn.events.forEach(event => {
+                    if (event.type === 'damage') {
+                        const data = event.data;
+                        if (characters[data.character] && characters[data.target]) {
+                            // Appliquer les dégâts au personnage cible
+                            const actualDamage = data.damage - data.reduced;
+                            characters[data.target].life -= actualDamage;
+                            if (characters[data.target].life <= 0) {
+                                characters[data.target].dead = true;
+                                characters[data.target].life = 0;
+                            }
+                        }
+                    } else if (event.type === 'death') {
+                        const data = event.data;
+                        if (characters[data.character]) {
+                            characters[data.character].dead = true;
+                            characters[data.character].life = 0;
+                        }
+                    }
+                });
+
+                // Enregistrer un snapshot de l'état des personnages à la fin du tour
+                characterSnapshots[turn.turnNumber] = deepCopy(characters);
+            });
         }
 
         // Fonction pour afficher les personnages dans les équipes
@@ -372,32 +353,12 @@
                     life.innerHTML = `<strong>Vie:</strong> ${character.life}`;
                     infoDiv.appendChild(life);
 
-                    const strength = document.createElement('p');
-                    strength.innerHTML = `<strong>Force:</strong> ${character.strength}`;
-                    infoDiv.appendChild(strength);
-
-                    const armor = document.createElement('p');
-                    armor.innerHTML = `<strong>Armure:</strong> ${character.armor}`;
-                    infoDiv.appendChild(armor);
-
-                    const speed = document.createElement('p');
-                    speed.innerHTML = `<strong>Vitesse:</strong> ${character.speed}`;
-                    infoDiv.appendChild(speed);
-
-                    const action = document.createElement('p');
-                    action.innerHTML = `<strong>Action:</strong> ${actionToString(character.action)}`;
-                    infoDiv.appendChild(action);
-
-                    const target = document.createElement('p');
-                    target.innerHTML = `<strong>Cible:</strong> ${character.target || 'Aucune'}`;
-                    infoDiv.appendChild(target);
-
                     // Barre de vie
                     const healthBar = document.createElement('div');
                     healthBar.classList.add('health-bar');
                     const healthInner = document.createElement('div');
                     healthInner.classList.add('health-bar-inner');
-                    const healthPercentage = (character.life / maxLife) * 100; // Calcul de la vie en pourcentage
+                    const healthPercentage = (character.life / maxLife) * 100;
                     healthInner.style.width = `${healthPercentage}%`;
                     healthInner.style.backgroundColor = getHealthColor(character.life);
                     healthBar.appendChild(healthInner);
@@ -424,21 +385,7 @@
         function displayActionLog(gameData) {
             const logContainer = document.getElementById('action-log');
 
-            // Étape 1 : Identifier les tours actuellement ouverts
-            const openTurns = new Set();
-            document.querySelectorAll('.log-entry').forEach(entry => {
-                const button = entry.querySelector('.turn-button');
-                const details = entry.querySelector('.turn-details');
-                if (details.style.display === 'block') {
-                    const turnNumberMatch = button.textContent.match(/Tour (\d+)/);
-                    if (turnNumberMatch) {
-                        const turnNumber = parseInt(turnNumberMatch[1], 10);
-                        openTurns.add(turnNumber);
-                    }
-                }
-            });
-
-            // Étape 2 : Vider le journal avant de le reconstruire
+            // Vider le journal avant de le reconstruire
             logContainer.innerHTML = '';
 
             // Initialiser les tours à partir de turn_id
@@ -465,24 +412,49 @@
                 });
             }
 
-            // Trier les tours par numéro décroissant pour afficher les plus récents en premier
-            const sortedTurns = [...turns].sort((a, b) => b.turnNumber - a.turnNumber);
+            // Trier les tours par numéro croissant
+            const sortedTurns = turns.sort((a, b) => a.turnNumber - b.turnNumber);
 
             // Afficher chaque tour dans le journal
             sortedTurns.forEach(turn => {
                 const entryDiv = document.createElement('div');
                 entryDiv.classList.add('log-entry');
 
-                // Créer un bouton cliquable pour le tour
-                const turnButton = document.createElement('button');
-                turnButton.textContent = `Tour ${turn.turnNumber}`;
-                turnButton.classList.add('turn-button');
+                // Créer un en-tête pour le tour
+                const turnHeader = document.createElement('h3');
+                turnHeader.textContent = `Tour ${turn.turnNumber}`;
+                turnHeader.style.cursor = 'pointer'; // Indiquer que c'est cliquable
+
+                // Ajouter un événement de clic pour afficher/masquer les détails
+                turnHeader.addEventListener('click', () => {
+                    if (detailsDiv.style.display === 'none') {
+                        detailsDiv.style.display = 'block';
+                        openTurns[turn.turnNumber] = true;
+                    } else {
+                        detailsDiv.style.display = 'none';
+                        openTurns[turn.turnNumber] = false;
+                    }
+                });
+
+                entryDiv.appendChild(turnHeader);
 
                 // Créer un conteneur pour les détails du tour
                 const detailsDiv = document.createElement('div');
                 detailsDiv.classList.add('turn-details');
 
-                // Ajouter le tableau des points de vie
+                // Définir l'état d'affichage en fonction de openTurns
+                if (openTurns[turn.turnNumber]) {
+                    detailsDiv.style.display = 'block';
+                } else {
+                    detailsDiv.style.display = 'none';
+                }
+
+                // Ajouter le titre "Tableaux de Vie"
+                const healthTitle = document.createElement('h4');
+                healthTitle.textContent = 'Tableaux de Vie';
+                detailsDiv.appendChild(healthTitle);
+
+                // Ajouter le conteneur des tableaux de vies
                 const healthTableDiv = document.createElement('div');
                 healthTableDiv.classList.add('health-tables');
 
@@ -490,19 +462,17 @@
                 const snapshot = characterSnapshots[turn.turnNumber];
 
                 if (snapshot) {
-                    // Récupérer les équipes avec des personnages vivants
-                    const aliveTeams = {};
+                    // Récupérer les équipes
+                    const teams = {};
                     for (const char of Object.values(snapshot)) {
-                        if (!char.dead) {
-                            if (!aliveTeams[char.teamid]) {
-                                aliveTeams[char.teamid] = [];
-                            }
-                            aliveTeams[char.teamid].push(char);
+                        if (!teams[char.teamid]) {
+                            teams[char.teamid] = [];
                         }
+                        teams[char.teamid].push(char);
                     }
 
                     // Générer les tableaux pour chaque équipe
-                    for (const [teamId, teamChars] of Object.entries(aliveTeams)) {
+                    for (const [teamId, teamChars] of Object.entries(teams)) {
                         const teamTable = document.createElement('table');
                         teamTable.classList.add('health-table');
 
@@ -513,6 +483,16 @@
                         teamHeader.textContent = `Équipe ${teamId}`;
                         headerRow.appendChild(teamHeader);
                         teamTable.appendChild(headerRow);
+
+                        // En-tête des colonnes
+                        const colHeaderRow = document.createElement('tr');
+                        const nameHeader = document.createElement('th');
+                        nameHeader.textContent = 'Personnage';
+                        const lifeHeader = document.createElement('th');
+                        lifeHeader.textContent = 'Vie';
+                        colHeaderRow.appendChild(nameHeader);
+                        colHeaderRow.appendChild(lifeHeader);
+                        teamTable.appendChild(colHeaderRow);
 
                         // Lignes des personnages
                         teamChars.forEach(char => {
@@ -532,53 +512,57 @@
                     detailsDiv.appendChild(healthTableDiv);
                 }
 
-                // Remplir la liste des dégâts
+                // Ajouter le titre "Tableaux de Dégâts"
                 if (turn.damage.length > 0) {
-                    const damageHeader = document.createElement('p');
-                    damageHeader.innerHTML = `<strong>Dégâts Infligés :</strong>`;
-                    detailsDiv.appendChild(damageHeader);
+                    const damageTitle = document.createElement('h4');
+                    damageTitle.textContent = 'Tableaux de Dégâts';
+                    detailsDiv.appendChild(damageTitle);
 
-                    const damageList = document.createElement('ul');
-                    damageList.classList.add('damage-list');
+                    // Créer un conteneur pour les tableaux de dégâts
+                    const damageTableDiv = document.createElement('div');
+                    damageTableDiv.classList.add('damage-tables');
 
+                    // Créer un tableau pour les dégâts infligés
+                    const damageTable = document.createElement('table');
+                    damageTable.classList.add('damage-table');
+
+                    // En-tête du tableau
+                    const headerRow = document.createElement('tr');
+                    const attackerHeader = document.createElement('th');
+                    attackerHeader.textContent = 'Attaquant';
+                    const targetHeader = document.createElement('th');
+                    targetHeader.textContent = 'Cible';
+                    const damageHeader = document.createElement('th');
+                    damageHeader.textContent = 'Dégâts';
+                    headerRow.appendChild(attackerHeader);
+                    headerRow.appendChild(targetHeader);
+                    headerRow.appendChild(damageHeader);
+                    damageTable.appendChild(headerRow);
+
+                    // Lignes des dégâts
                     turn.damage.forEach(damageData => {
-                        const damageItem = document.createElement('li');
-                        const damageText = `${damageData.character} -> Infligé -> ${damageData.damage} dégâts à ${damageData.target}`;
-                        damageItem.textContent = damageText;
-                        damageList.appendChild(damageItem);
+                        const row = document.createElement('tr');
+                        const attackerCell = document.createElement('td');
+                        attackerCell.textContent = damageData.character;
+                        const targetCell = document.createElement('td');
+                        targetCell.textContent = damageData.target;
+                        const damageCell = document.createElement('td');
+                        damageCell.textContent = damageData.damage;
+                        row.appendChild(attackerCell);
+                        row.appendChild(targetCell);
+                        row.appendChild(damageCell);
+                        damageTable.appendChild(row);
                     });
 
-                    detailsDiv.appendChild(damageList);
-                } else {
-                    const noDetailsP = document.createElement('p');
-                    noDetailsP.textContent = `Aucun détail disponible pour ce tour.`;
-                    detailsDiv.appendChild(noDetailsP);
+                    damageTableDiv.appendChild(damageTable);
+                    detailsDiv.appendChild(damageTableDiv);
                 }
 
-                // Ajouter un événement de clic pour basculer l'affichage des détails
-                turnButton.addEventListener('click', () => {
-                    if (detailsDiv.style.display === 'none' || detailsDiv.style.display === '') {
-                        detailsDiv.style.display = 'block';
-                    } else {
-                        detailsDiv.style.display = 'none';
-                    }
-                });
-
-                // Ajouter le bouton et les détails au conteneur du tour
-                entryDiv.appendChild(turnButton);
                 entryDiv.appendChild(detailsDiv);
 
                 // Ajouter l'entrée au journal
                 logContainer.appendChild(entryDiv);
-
-                // Étape 3 : Réouvrir les détails si le tour était ouvert précédemment
-                if (openTurns.has(turn.turnNumber)) {
-                    detailsDiv.style.display = 'block';
-                }
             });
-
-            // Optionnel : Faire défiler vers le haut automatiquement
-            logContainer.scrollTop = 0;
         }
 
         // Fonction principale pour initialiser et afficher les données
