@@ -37,36 +37,37 @@
    ```bash
    git clone https://github.com/theohugo/R5.A.05.alt.RBPT.git
    cd R5.A.05.alt.RBPT/
-   python -m http.server 8000
-   cd Project/
    ```
+## Lancement de l'API
 
-   Pour acceder au visuel depuis le serveur 
-   ```
-   http://localhost:8000/visual_server.html
-   ```
-
-2. Installez les dépendances :
+1. Installez les dépendances :
 
    ```bash
    pip install -r requirements.txt
    ```
-
-3. Configurez Kafka et Grafana selon la documentation.
-
-## Lancement de l'API
-
-1. Rendez-vous dans le répertoire `Engine` :
-
-   ```bash
-   cd ./Engine
-   ```
-
+   
 2. Lancez l'API avec Flask :
 
    ```bash
-   flask --app ApiArena run
+   flask run
    ```
+   
+## Lancer le visuel du serveur
+
+  ```bash
+   python -m http.server 8000
+   ```
+
+   Pour acceder au visuel depuis le serveur 
+   ```
+   http://localhost:8000/Visual_RT/visual_server.html
+   ```
+
+
+
+## Configurez Kafka et Grafana selon la documentation.
+
+
 
 3. Accédez à l'API sur [http://127.0.0.1:5000](http://127.0.0.1:5000).
 
