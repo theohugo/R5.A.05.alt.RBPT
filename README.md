@@ -65,9 +65,14 @@
    python -m http.server 8000
    ```
 
-   Pour acceder au visuel depuis le serveur 
+   Pour acceder au visuel en temps réel depuis le serveur 
    ```
    http://localhost:8000/Visual_RT/visual_server.html
+   ```
+
+  Pour acceder au visuel en temps Replay avec les animations depuis le serveur 
+   ```
+   http://localhost:8000/Visual_RP/visual_server.html
    ```
 
 
