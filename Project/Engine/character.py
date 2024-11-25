@@ -67,7 +67,7 @@ class CharacterProxy:
     def setTarget(self, value):
         self._target = value
         
-    def setArenaId(self, value):
+    def setArena(self, value):
         self._arena_id = value
 
     def __str__(self):
@@ -94,7 +94,7 @@ class CharacterProxy:
             "action": actionToStr(self._action),
             "target": str(self._target),
             "dead": self._dead,
-            "_arena_id": self._arena_id
+            "arena_id": self._arena_id
         }
         return cDict
 
