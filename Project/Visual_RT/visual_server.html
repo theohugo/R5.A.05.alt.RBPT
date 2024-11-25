@@ -569,7 +569,7 @@
         async function fetchDataAndUpdate() {
             try {
                 // Charger les données depuis data.json
-                const response = await fetch(`./Project/Engine/log/data.json?t=${new Date().getTime()}`); // Ajout d'un timestamp pour éviter le cache
+                const response = await fetch(`../Engine/log/data.json?t=${new Date().getTime()}`); // Ajout d'un timestamp pour éviter le cache
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
