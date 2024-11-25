@@ -31,7 +31,7 @@
     .character-container {
       position: absolute;
       width: 64px;
-      height: 200px;
+      /* height: 200px; */
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -158,15 +158,16 @@
   <script>
     // Objet des actions possibles
     const actions = {
-      "0": "Aucune",
-      "1": "Attaque",
-      "2": "Défense",
+      "0": "Attaque",
+      "1": "Défense",
+      "2": "Esquive",
+      "3": "Fuite",
       "None": "Aucune"
     };
 
     // Fonction pour charger le fichier JSON
     function loadData() {
-      fetch('data.json')  // Charge le fichier JSON
+      fetch('../Engine/log/data.json')  // Charge le fichier JSON 
         .then(response => {
           if (!response.ok) {
             throw new Error('Erreur lors de la récupération du fichier JSON');
@@ -250,7 +251,7 @@
 
         const info = document.createElement('div');
         info.classList.add('character-info');
-        info.innerHTML = `<div>CID: ${character.cid}</div><div>Team: ${character.teamid}</div>`;
+        info.innerHTML = `<div>CID: ${character.cid.toString().slice(-4)}</div><div>Team: ${character.teamid.toString().slice(-4)}</div>`;
 
         const initialLife = character.life;
 
@@ -287,7 +288,7 @@
 
         healthBar.style.top = '-120px';
         statsElement.style.left = '70px';
-        statsElement.style.top = '40px';
+        statsElement.style.top = '0px';
 
         charContainers[character.cid] = { 
           element: charContainer, 
@@ -307,7 +308,7 @@
         shield.src = 'bouclier64.png';
         shield.style.position = 'absolute';
         shield.style.left = '50%';  // Centrer horizontalement par rapport au personnage
-        shield.style.top = '40%';   // Centrer verticalement par rapport au personnage
+        shield.style.top = '30%';   // Centrer verticalement par rapport au personnage
         shield.style.transform = 'translate(-50%, -50%) scale(0)';  // Commencer avec une petite taille
         shield.style.opacity = '0';  // Commencer invisible
         shield.style.zIndex = '10';  // S'assurer que le bouclier est au-dessus du personnage
@@ -341,15 +342,15 @@
         }
       }
 
-      function displayPass(character) {
+      function displayEsquive(character) {
         const charContainer = character.element;
 
         // Créer l'élément pour la fleche
         const fleche = document.createElement('img');
-        fleche.src = 'fleche64.png';
+        fleche.src = 'esquive64.png';
         fleche.style.position = 'absolute';
         fleche.style.left = '50%';  // Centrer horizontalement par rapport au personnage
-        fleche.style.top = '40%';   // Centrer verticalement par rapport au personnage
+        fleche.style.top = '30%';   // Centrer verticalement par rapport au personnage
         fleche.style.transform = 'translate(-50%, -50%) scale(0)';  // Commencer avec une petite taille
         fleche.style.opacity = '0';  // Commencer invisible
         fleche.style.zIndex = '10';  // S'assurer que le fleche est au-dessus du personnage
@@ -360,17 +361,34 @@
         // Ajouter un léger délai avant de commencer l'animation
         setTimeout(() => {
           // Appliquer l'animation : faire grossir le bouclier et augmenter l'opacité
-          fleche.style.opacity = '0.5';  // Rendre semi-transparent
+          fleche.style.opacity = '0.8';  // Rendre semi-transparent
           fleche.style.transform = 'translate(-50%, -50%) scale(1)';  // Augmenter la taille à sa taille finale
         }, 10); // Légère attente pour que la transition soit bien appliquée
 
-        //suprime
-        setTimeout(() => {
-          fleche.style.opacity = '0';  // Rendre l'image totalement transparente
-          fleche.style.transform = 'translate(-50%, -50%) scale(0)';  // Réduire la taille à zéro
-          setTimeout(() => fleche.remove(), 1000);  // Supprimer l'image après la transition
-        }, 1000);
+        // //suprime
+        // setTimeout(() => {
+        //   fleche.style.opacity = '0';  // Rendre l'image totalement transparente
+        //   fleche.style.transform = 'translate(-50%, -50%) scale(0)';  // Réduire la taille à zéro
+        //   setTimeout(() => fleche.remove(), 1000);  // Supprimer l'image après la transition
+        // }, 1000);
 
+      }
+
+      // Fonction pour retirer le bouclier
+      function removeEsquive(character) {
+        const charContainer = character.element;
+
+        // Trouver l'image du bouclier dans le conteneur du personnage
+        const shield = charContainer.querySelector('img[src="esquive64.png"]');
+
+        if (shield) {
+          // Appliquer une animation pour réduire la taille et diminuer l'opacité
+          shield.style.opacity = '0';  // Rendre complètement transparent
+          shield.style.transform = 'translate(-50%, -50%) scale(0)';  // Réduire la taille à zéro
+
+          // Supprimer l'élément du DOM après l'animation
+          setTimeout(() => shield.remove(), 1000); // Suppression après 1 seconde
+        }
       }
 
       function displayRound(currentTurn, delay) {
@@ -388,6 +406,14 @@
             }, 1000);
           }
         }, delay);
+      }
+
+      // Fonction pour retirer un personnage de l'arène
+      function retirerPersonnage(character) {
+        // Vérifier si le personnage existe
+        const charContainer = character.element;
+        //suprimer
+        charContainer.remove();
       }
 
       async function updateActions() {
@@ -453,16 +479,24 @@
                   }
                   // Si le joueur attaque, on retire son bouclier (s'il en a un)
                   removeShield(targetCharacter);
+                  removeEsquive(targetCharacter);
                   break;
                 case 'Défense':
                   console.log(actionData.cid + ' se defend');
                   // Afficher un bouclier semi-transparent pendant la défense
                   displayShield(character);
                   break;
+                case 'Esquive':
+                  console.log(actionData.cid + ' esquive');
+                  // animation d'esquive
+                  displayEsquive(character)
+                  break;
+                case 'Fuite':
+                  console.log(actionData.cid + ' prend la fuite');
+                  retirerPersonnage(character)
+                  break
                 case 'Aucune':
                   console.log(actionData.cid + ' ne fait rien');
-                  //affiche passe son tour
-                  displayPass(character)
                   break;
               }
             }
@@ -487,6 +521,7 @@
 
               Object.values(charContainers).forEach(character => {
                   removeShield(character);
+                  removeEsquive(character);
               });
               await new Promise(resolve => setTimeout(resolve, 1000));
             }
