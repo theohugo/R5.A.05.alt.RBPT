@@ -220,6 +220,8 @@ class AgentApp:
                 action_id, target_id = agent.decide_action(game_state, targets, self.agents, game_state, self.turn_number)
                 if action_id is not None and target_id is not None:
                     agent.perform_action(action_id, target_id)
+                    # Attendre 2 secondes entre chaque envoi d'action
+                    time.sleep(2)
                 turn_log["actions"].append({
                     "bot_name": agent.bot_name,
                     "life": agent.life,
@@ -400,14 +402,12 @@ class BotAgent:
                 self.action = "Attaque"
                 self.reasoning = f"Aucun allié en danger. J'attaque la cible assignée."
             elif self.role == "Support":
-                # Le support priorise le soin si possible, sinon attaque
-                allies_in_need = [ally for ally in allies if ally['life'] < 10 and ally['cid'] != self.cid]
-                if allies_in_need:
-                    ally_to_heal = max(allies_in_need, key=lambda x: x['life'])
-                    action_id = 3  # Suppose que 3 est l'ID pour SOIN
-                    target_id = ally_to_heal['cid']
-                    self.action = "Soin"
-                    self.reasoning = f"Support. Je soigne l'allié {target_id[:4]}."
+                # Le support ne peut plus soigner, il attaquera ou se défendra
+                # Exemple : Prioriser la défense si sous attaque, sinon attaquer
+                if under_attack:
+                    action_id = random.choice([1, 2])  # BLOCK ou DODGE
+                    self.action = "Se Défend"
+                    self.reasoning = f"Support sous attaque. Je me défends."
                 else:
                     action_id = 0  # HIT
                     self.action = "Attaque"
@@ -422,10 +422,6 @@ class BotAgent:
             # Si aucune cible assignée, choisir un ennemi au hasard
             target_enemy = random.choice(enemies)
             target_id = target_enemy['cid']
-
-        # Pour les actions qui nécessitent une cible spécifique
-        if self.role == "Support" and action_id == 3 and allies_in_need:
-            return action_id, target_id
 
         return action_id, target_id
 

@@ -1,3 +1,5 @@
+# route.py
+
 import time, json
 import http.client
 from Project.Engine.data import *
@@ -5,6 +7,7 @@ from Project.Engine.arena import *
 from Project.Engine.character import *
 from flask import current_app, jsonify, request, Blueprint
 import uuid
+import threading
 
 # Créer un Blueprint pour enregistrer les routes dans app.py
 routes_blueprint = Blueprint('routes', __name__)
@@ -13,6 +16,9 @@ arena_networks = {
     1: {"arena_network": "192.168.10.1"},
     2: {"arena_network": "192.168.10.2"}
 }
+
+# Initialiser un verrou global si nécessaire (optionnel)
+route_lock = threading.Lock()
 
 # GET - dire bonjour
 @routes_blueprint.route('/', methods=['GET'])
@@ -37,7 +43,7 @@ def get_engine_status():
         "active_players": active_players
     }), 200
 
-# GET - récupérer un personnage - /character/<cid>
+# POST - /character/join/
 @routes_blueprint.route('/character/join/', methods=['POST'])
 def create_character():
     if not request.json:
@@ -84,20 +90,29 @@ def create_character():
 # PUT - mettre à jour un personnage - /character/<cid>
 @routes_blueprint.route('/character/<string:cid>', methods=['PUT'])
 def update_character(cid):
-    
+    if not request.json:
+        return jsonify({"error": "Request body is missing"}), 400
+
     arena = current_app.engine._arena
     characters = arena._playersList
-    
+
     for character in characters:
         if character.isId(cid):
-            character.setLife(request.json.get('life'))
+            new_life = request.json.get('life')
+            if new_life is not None:
+                try:
+                    new_life = int(new_life)
+                    if new_life < 0:
+                        return jsonify({"error": "Life must be non-negative"}), 400
+                    character.setLife(new_life)
+                except ValueError:
+                    return jsonify({"error": "Life must be an integer"}), 400
             return jsonify(character.toDict()), 200
     return jsonify({"error": "Personnage non trouvé"}), 404
 
 # DELETE - supprimer un personnage - /character/<cid>
 @routes_blueprint.route('/character/<string:cid>', methods=['DELETE'])
 def delete_character(cid):
-    
     arena = current_app.engine._arena
     characters = arena._playersList
     for character in characters:
@@ -109,7 +124,7 @@ def delete_character(cid):
 # PUT - /character/action/switcharena/<cid>/<action_id>/<arena_id>
 @routes_blueprint.route('/character/action/switcharena/<string:cid>/<int:action_id>/<int:arena_id>', methods=['PUT'])
 def switch_arena(cid, action_id, arena_id):
-    
+
     arena = current_app.engine._arena
     dataCharacter = arena.getPlayerByName(id=cid)
     current_arena_id = dataCharacter.getArenaId()
@@ -123,15 +138,14 @@ def switch_arena(cid, action_id, arena_id):
         return jsonify({"error": f"Action ID {action_id} non valide"}), 400
 
     # Appliquer l'action et vérifier si une cible est requise
-    dataCharacter.setAction(action)
+    current_app.engine.setActionTo(cid, action_id)
     if action == ACTION.FLY:
-        dataCharacter.setArena(arena_id)                                                                                                          
-        
+        current_app.engine.setArenaTo(cid, arena_id)  
     return jsonify({
         "message": f"Personnage '{cid}' a quitté l'arène {current_arena_id} pour aller sur l'arène {arena_id}.",
         "character": dataCharacter.toDict()
     }), 200
-   
+
 
 # POST - /character/action/<cid>/<action>
 @routes_blueprint.route('/character/action/<string:cid>/<int:action_id>/<string:target_id>', methods=['POST'])
