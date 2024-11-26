@@ -6,7 +6,7 @@ import time
 import random
 
 # Configuration de l'API
-API_URL = "http://127.0.0.1:5000"
+API_URL = "http://10.109.150.20:5000"
 
 class AgentApp:
     def __init__(self, root):
@@ -269,6 +269,7 @@ class BotAgent:
         self.strength = 0
         self.speed = 0
         self.armor = 0
+        self.last_action = None  # [NEW] Track the last action performed
         self.create_agent()
         self.defense_counter = 0  # Compteur pour éviter les boucles de défense
 
@@ -378,50 +379,91 @@ class BotAgent:
                 self.action = "Attaque"
                 self.reasoning = f"Je décide d'attaquer pour éviter la boucle."
                 self.defense_counter = 0
+                self.last_action = "ATTACK"  # [UPDATED] Track last action
             else:
-                action_id = random.choice([1, 2])  # BLOCK ou DODGE
-                self.action = "Se Défend"
-                self.reasoning = f"Des ennemis plus rapides pourraient m'attaquer. Je me défends."
-                self.defense_counter += 1
+                # [UPDATED] Prevent defending if last action was defend
+                if self.last_action != "DEFEND":
+                    action_id = random.choice([1, 2])  # BLOCK ou DODGE
+                    self.action = "Se Défend"
+                    self.reasoning = f"Des ennemis plus rapides pourraient m'attaquer. Je me défends."
+                    self.defense_counter += 1
+                    self.last_action = "DEFEND"  # [UPDATED] Track last action
+                else:
+                    # If last action was defend, choose to attack instead
+                    action_id = 0  # HIT
+                    self.action = "Attaque"
+                    self.reasoning = f"J'ai déjà défendu récemment. J'attaque la cible assignée."
+                    self.defense_counter = 0
+                    self.last_action = "ATTACK"  # [UPDATED] Track last action
         else:
             self.defense_counter = 0
             if self.role == "Attacker":
                 action_id = 0  # HIT
                 self.action = "Attaque"
                 self.reasoning = f"Attaquant. J'attaque la cible assignée."
+                self.last_action = "ATTACK"  # [UPDATED] Track last action
             elif self.role == "Defender":
                 if any(ally['life'] < 5 for ally in allies if ally['cid'] != self.cid):
                     ally_in_need = min([ally for ally in allies if ally['cid'] != self.cid and ally['life'] < 5], key=lambda x: x['life'], default=None)
                     if ally_in_need:
-                        action_id = random.choice([1, 2])  # BLOCK ou DODGE
-                        target_id = ally_in_need['cid']
-                        self.action = "Protège"
-                        self.reasoning = f"Défenseur. Je protège l'allié {target_id[:4]}."
-                        return action_id, target_id
+                        # [UPDATED] Prevent defending if last action was defend
+                        if self.last_action != "DEFEND":
+                            action_id = random.choice([1, 2])  # BLOCK ou DODGE
+                            target_id = ally_in_need['cid']
+                            self.action = "Protège"
+                            self.reasoning = f"Défenseur. Je protège l'allié {target_id[:4]}."
+                            self.last_action = "DEFEND"  # [UPDATED] Track last action
+                            return action_id, target_id
                 action_id = 0  # HIT
                 self.action = "Attaque"
                 self.reasoning = f"Aucun allié en danger. J'attaque la cible assignée."
+                self.last_action = "ATTACK"  # [UPDATED] Track last action
             elif self.role == "Support":
                 # Le support ne peut plus soigner, il attaquera ou se défendra
                 # Exemple : Prioriser la défense si sous attaque, sinon attaquer
                 if under_attack:
-                    action_id = random.choice([1, 2])  # BLOCK ou DODGE
-                    self.action = "Se Défend"
-                    self.reasoning = f"Support sous attaque. Je me défends."
+                    # [UPDATED] Prevent defending if last action was defend
+                    if self.last_action != "DEFEND":
+                        action_id = random.choice([1, 2])  # BLOCK ou DODGE
+                        self.action = "Se Défend"
+                        self.reasoning = f"Support sous attaque. Je me défends."
+                        self.last_action = "DEFEND"  # [UPDATED] Track last action
+                    else:
+                        # If last action was defend, choose to attack instead
+                        action_id = 0  # HIT
+                        self.action = "Attaque"
+                        self.reasoning = f"J'ai déjà défendu récemment. J'attaque la cible assignée."
+                        self.last_action = "ATTACK"  # [UPDATED] Track last action
                 else:
                     action_id = 0  # HIT
                     self.action = "Attaque"
                     self.reasoning = f"Support. J'attaque la cible assignée."
+                    self.last_action = "ATTACK"  # [UPDATED] Track last action
             else:
                 action_id = 0  # HIT
                 self.action = "Attaque"
                 self.reasoning = f"Par défaut. J'attaque la cible assignée."
+                self.last_action = "ATTACK"  # [UPDATED] Track last action
 
         target_id = targets.get(self.cid)
         if not target_id:
             # Si aucune cible assignée, choisir un ennemi au hasard
             target_enemy = random.choice(enemies)
             target_id = target_enemy['cid']
+
+        # [UPDATED] Ensure the target is alive
+        target_alive = any(char['cid'] == target_id and not char['dead'] for char in game_state)
+        if not target_alive:
+            alive_enemies = [char for char in game_state if char['teamid'] != my_team and not char['dead']]
+            if alive_enemies:
+                target_enemy = random.choice(alive_enemies)
+                target_id = target_enemy['cid']
+                self.reasoning += " La cible précédente était morte. Nouvelle cible sélectionnée."
+            else:
+                # No alive enemies left
+                self.action = "Attente"
+                self.reasoning = "Aucun ennemi vivant disponible."
+                return None, None
 
         return action_id, target_id
 
@@ -431,6 +473,11 @@ class BotAgent:
                 f"{self.BASE_URL}/character/action/{self.cid}/{action_id}/{target_id}"
             )
             response.raise_for_status()
+            # [UPDATED] Update last_action based on action_id
+            if action_id in [1, 2]:
+                self.last_action = "DEFEND"
+            else:
+                self.last_action = "ATTACK"
             self.action += f" (Action {action_id})"
             self.reasoning += f" Action réussie."
         except requests.exceptions.RequestException as e:
