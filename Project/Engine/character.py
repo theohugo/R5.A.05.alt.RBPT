@@ -39,7 +39,7 @@ class CharacterProxy:
     def getSpeed(self):
         return self._speed
     
-    def getArenaId(self):
+    def getArena(self):
         return self._arena_id
 
     def getAction(self):
@@ -85,7 +85,7 @@ class CharacterProxy:
     def toDict(self):
         cDict = {
             "cid": self._id,
-            "teamid": self._teamid,
+            "team_id": self._teamid,
             "name": self._name,
             "life": self._life,
             "strength": self._strength,

@@ -1,6 +1,6 @@
 # route.py
 
-import time, json
+import json
 import http.client
 from Project.Engine.data import *
 from Project.Engine.arena import *
@@ -13,8 +13,8 @@ import threading
 routes_blueprint = Blueprint('routes', __name__)
 
 arena_networks = {
-    1: {"arena_network": "192.168.10.1"},
-    2: {"arena_network": "192.168.10.2"}
+    1: {"arena_network": "10.7.181.219:6969"},
+    2: {"arena_network": "10.7.177.131:6969"}
 }
 
 # Initialiser un verrou global si nécessaire (optionnel)
@@ -28,6 +28,13 @@ def say_hello():
 # GET - récupérer les personnages d'une arène - /characters/
 @routes_blueprint.route('/characters/', methods=['GET'])
 def get_characters():
+    arena = current_app.engine._arena
+    characters = arena._playersList
+    return jsonify({"characters": [char.toDict() for char in characters]}), 200
+
+# GET - récupérer le personnage spécifique - /character/cid
+@routes_blueprint.route('/character/<string:cid>', methods=['GET'])
+def get_character():
     arena = current_app.engine._arena
     characters = arena._playersList
     return jsonify({"characters": [char.toDict() for char in characters]}), 200
@@ -124,10 +131,12 @@ def delete_character(cid):
 # PUT - /character/action/switcharena/<cid>/<action_id>/<arena_id>
 @routes_blueprint.route('/character/action/switcharena/<string:cid>/<int:action_id>/<int:arena_id>', methods=['PUT'])
 def switch_arena(cid, action_id, arena_id):
-
+    
     arena = current_app.engine._arena
     dataCharacter = arena.getPlayerByName(id=cid)
-    current_arena_id = dataCharacter.getArenaId()
+    current_arena_id = dataCharacter.getArena()
+    
+    # current_arena_network = arena_networks.get(current_arena_id, {}).get("arena_network", "Unknown Network")
 
     if not dataCharacter:
         return jsonify({"error": f"Personnage avec cid {cid} non trouvé"}), 404
@@ -138,14 +147,44 @@ def switch_arena(cid, action_id, arena_id):
         return jsonify({"error": f"Action ID {action_id} non valide"}), 400
 
     # Appliquer l'action et vérifier si une cible est requise
-    current_app.engine.setActionTo(cid, action_id)
+    dataCharacter.setAction(action)
     if action == ACTION.FLY:
-        current_app.engine.setArenaTo(cid, arena_id)  
+        
+        # Get the target network for the new arena
+        new_arena_network = arena_networks.get(arena_id, {}).get("arena_network", None)
+        
+        if not new_arena_network:
+            return jsonify({"error": f"Arène {arena_id} non trouvée"}), 404
+        
+        dataCharacter.setArena(arena_id)     
+        
+        try :
+            send_to_arena(new_arena_network, dataCharacter.toDict()) 
+        except Exception as e:
+            return jsonify({"error": f"Impossible de se connecter à l'arène {arena_id} =>{e}"}), 500  
+          
+        # Store the character's data before removing them
+        engine = current_app.engine
+        if not hasattr(engine, 'left_players'):
+            engine.left_players = []
+
+        cid = dataCharacter.getId()
+        team_id = dataCharacter._teamid
+        gold = engine._goldBook.get(cid, 0)
+
+        # Append the character's data to left_players
+        engine.left_players.append({
+            'cid': cid,
+            'team_id': team_id,
+            'gold': gold
+        })
+
+        delete_character(cid=cid)
+        
     return jsonify({
-        "message": f"Personnage '{cid}' a quitté l'arène {current_arena_id} pour aller sur l'arène {arena_id}.",
+        "message": f"Personnage '{cid}' a quitté l'arène {current_arena_id} pour aller sur l'arène {arena_id} (IP: {new_arena_network})",
         "character": dataCharacter.toDict()
     }), 200
-
 
 # POST - /character/action/<cid>/<action>
 @routes_blueprint.route('/character/action/<string:cid>/<int:action_id>/<string:target_id>', methods=['POST'])
@@ -168,7 +207,7 @@ def action_arena(cid, action_id, target_id):
 
     # Appliquer l'action et vérifier si une cible est requise
     current_app.engine.setActionTo(cid, action_id)
-    if action in [ACTION.HIT, ACTION.BLOCK, ACTION.DODGE, ACTION.FLY]:
+    if action in [ACTION.HIT, ACTION.BLOCK, ACTION.DODGE]:
         current_app.engine.setTargetTo(cid, target_id)
 
     return jsonify({
@@ -176,17 +215,29 @@ def action_arena(cid, action_id, target_id):
         "character": dataCharacter.toDict()
     }), 200
 
+def send_to_arena(ip, character_data):
+    
+    """
+    Sends character data to the target arena network.
 
-def select_new_arena(arena_id):
-    return arena_networks[arena_id]['arena_network']
-
-def send_to_arena(url, character_data):
-    host = url.split('//')[1]  # Extraire l'hôte de l'URL
-    conn = http.client.HTTPConnection(host)
+    :param ip: The target network's IP address.
+    :param character_data: The serialized character data to send.
+    """
+    
+    url = f"http://{ip}/character/join/"  # Assuming the target network has this endpoint
+    conn = http.client.HTTPConnection(ip)
     headers = {'Content-Type': 'application/json'}
     json_data = json.dumps(character_data)
+
+    # Send the POST request
     conn.request("POST", "/character/join/", body=json_data, headers=headers)
-    return conn.getresponse()
+    response = conn.getresponse()
+
+    # Handle response
+    if response.status != 201:
+        raise Exception(f"Failed to send character to {ip} => {response.status} {response.reason}")
+
+    return response
 
 
 @routes_blueprint.route('/ranking/individual/', methods=['GET'])
@@ -194,16 +245,29 @@ def get_individual_ranking():
     engine = current_app.engine
     players = engine._arena._playersList
 
-    # Trier les joueurs par or décroissant
-    ranking = sorted(players, key=lambda x: engine._goldBook.get(x.getId(), 0), reverse=True)
-    ranking_data = [
-        {
+   # Create a list for ranking data
+    ranking_data = []
+
+    # Include current players
+    for char in players:
+        ranking_data.append({
             "cid": char.getId(),
             "gold": engine._goldBook.get(char.getId(), 0),
             "team": char._teamid
-        }
-        for char in ranking
-    ]
+        })
+
+    # Include left players
+    if hasattr(engine, 'left_players'):
+        for player in engine.left_players:
+            ranking_data.append({
+                "cid": player['cid'],
+                "gold": player['gold'],
+                "team": player['team_id']
+            })
+
+    # Sort the combined ranking data by gold in descending order
+    ranking_data.sort(key=lambda x: x['gold'], reverse=True)
+    
     return jsonify({"ranking": ranking_data}), 200
 
 @routes_blueprint.route('/ranking/team/', methods=['GET'])
@@ -212,15 +276,20 @@ def get_team_ranking():
     players = engine._arena._playersList
     team_gold = {}
 
-    # Accumuler l'or pour chaque équipe
+     # Accumulate gold for current players
     for char in players:
         team_id = char._teamid
         char_gold = engine._goldBook.get(char.getId(), 0)
-        if team_id not in team_gold:
-            team_gold[team_id] = 0
-        team_gold[team_id] += char_gold
+        team_gold[team_id] = team_gold.get(team_id, 0) + char_gold
 
-    # Trier les équipes par or total décroissant
+    # Accumulate gold for left players
+    if hasattr(engine, 'left_players'):
+        for player in engine.left_players:
+            team_id = player['team_id']
+            gold = player['gold']
+            team_gold[team_id] = team_gold.get(team_id, 0) + gold
+
+    # Sort teams by total gold
     ranking = sorted(team_gold.items(), key=lambda x: x[1], reverse=True)
     ranking_data = [{"team_id": team_id, "gold": gold} for team_id, gold in ranking]
 
