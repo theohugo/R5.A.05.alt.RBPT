@@ -63,6 +63,28 @@ class AgentApp:
         self.stop_button.pack(side=tk.LEFT, padx=5)
         self.stop_button.config(state=tk.DISABLED)
 
+        # Section pour les classements
+        rankings_frame = ttk.Frame(main_frame)
+        rankings_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+
+        # Tableau pour le classement individuel
+        individual_rank_frame = ttk.LabelFrame(rankings_frame, text="Classement Individuel")
+        individual_rank_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=5, pady=5)
+        self.individual_tree = ttk.Treeview(individual_rank_frame, columns=("CID", "Gold", "Team"), show='headings')
+        for col in ("CID", "Gold", "Team"):
+            self.individual_tree.heading(col, text=col)
+            self.individual_tree.column(col, width=100, anchor='center')
+        self.individual_tree.pack(fill=tk.BOTH, expand=True)
+
+        # Tableau pour le classement par équipe
+        team_rank_frame = ttk.LabelFrame(rankings_frame, text="Classement par Équipe")
+        team_rank_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=5, pady=5)
+        self.team_tree = ttk.Treeview(team_rank_frame, columns=("Team ID", "Gold"), show='headings')
+        for col in ("Team ID", "Gold"):
+            self.team_tree.heading(col, text=col)
+            self.team_tree.column(col, width=100, anchor='center')
+        self.team_tree.pack(fill=tk.BOTH, expand=True)
+
     def start_agents(self):
         # Désactiver le bouton de démarrage
         self.start_button.config(state=tk.DISABLED)
@@ -78,6 +100,10 @@ class AgentApp:
 
         # Créer les agents
         self.agents = self.create_agents(num_agents)
+
+        # Réinitialiser les logs et le numéro de tour
+        self.turn_logs = []
+        self.turn_number = 0
 
         # Lancer le thread de jeu
         threading.Thread(target=self.game_loop, daemon=True).start()
@@ -136,11 +162,45 @@ class AgentApp:
             self.logs_text.insert(tk.END, "\n")
         self.logs_text.config(state='disabled')
 
+    def update_rankings(self):
+        try:
+            # Récupérer les classements individuels
+            response_individual = requests.get(f"{API_URL}/ranking/individual/")
+            response_individual.raise_for_status()
+            ranking_individual = response_individual.json()['ranking']
+
+            # Mettre à jour le tableau individuel
+            for row in self.individual_tree.get_children():
+                self.individual_tree.delete(row)
+            for player in ranking_individual:
+                self.individual_tree.insert("", "end", values=(
+                    player['cid'][:8],  # Afficher les 8 premiers caractères du CID
+                    player['gold'],
+                    player['team']
+                ))
+
+            # Récupérer les classements par équipe
+            response_team = requests.get(f"{API_URL}/ranking/team/")
+            response_team.raise_for_status()
+            ranking_team = response_team.json()['ranking']
+
+            # Mettre à jour le tableau par équipe
+            for row in self.team_tree.get_children():
+                self.team_tree.delete(row)
+            for team in ranking_team:
+                self.team_tree.insert("", "end", values=(
+                    team['team_id'],
+                    team['gold']
+                ))
+        except requests.exceptions.RequestException as e:
+            print(f"[ERROR] Échec de la récupération des classements: {e}")
+
     def update_loop(self):
         while True:
             if self.agents:
                 self.update_agents_table()
-            time.sleep(1)
+                self.update_rankings()
+            time.sleep(5)  # Mettre à jour toutes les 5 secondes
 
     def game_loop(self):
         self.running = True
@@ -206,6 +266,7 @@ class BotAgent:
         self.alive = True
         self.strength = 0
         self.speed = 0
+        self.armor = 0
         self.create_agent()
         self.defense_counter = 0  # Compteur pour éviter les boucles de défense
 
@@ -225,6 +286,7 @@ class BotAgent:
             self.cid = response.json()['cid']
             self.life = stats['life']
             self.strength = stats['strength']
+            self.armor = stats['armor']
             self.speed = stats['speed']
             print(f"[INFO] {self.bot_name} créé : ID = {self.cid}, Données = {data}")
         except requests.exceptions.RequestException as e:
@@ -245,14 +307,15 @@ class BotAgent:
         }
         priority = stat_priority.get(self.role, ['life', 'strength', 'armor', 'speed'])
 
-        # Allouer les points restants en fonction des priorités
+        # Allouer les points restants en fonction des priorités avec une certaine randomisation
         while points_left > 0:
             for stat in priority:
-                stats[stat] += 1
-                points_left -= 1
-                if points_left == 0:
+                if points_left <= 0:
                     break
-
+                # Introduire une probabilité d'allocation aléatoire
+                if random.random() > 0.2:  # 80% de chance d'ajouter un point à la priorité
+                    stats[stat] += 1
+                    points_left -= 1
         return stats
 
     def get_game_state(self):
@@ -326,21 +389,29 @@ class BotAgent:
                 self.reasoning = f"Attaquant. J'attaque la cible assignée."
             elif self.role == "Defender":
                 if any(ally['life'] < 5 for ally in allies if ally['cid'] != self.cid):
-                    ally_in_need = min([ally for ally in allies if ally['cid'] != self.cid], key=lambda x: x['life'])
-                    action_id = random.choice([1, 2])  # BLOCK ou DODGE
-                    target_id = ally_in_need['cid']
-                    self.action = "Protège"
-                    self.reasoning = f"Défenseur. Je protège l'allié {target_id[:4]}."
-                    return action_id, target_id
+                    ally_in_need = min([ally for ally in allies if ally['cid'] != self.cid and ally['life'] < 5], key=lambda x: x['life'], default=None)
+                    if ally_in_need:
+                        action_id = random.choice([1, 2])  # BLOCK ou DODGE
+                        target_id = ally_in_need['cid']
+                        self.action = "Protège"
+                        self.reasoning = f"Défenseur. Je protège l'allié {target_id[:4]}."
+                        return action_id, target_id
+                action_id = 0  # HIT
+                self.action = "Attaque"
+                self.reasoning = f"Aucun allié en danger. J'attaque la cible assignée."
+            elif self.role == "Support":
+                # Le support priorise le soin si possible, sinon attaque
+                allies_in_need = [ally for ally in allies if ally['life'] < 10 and ally['cid'] != self.cid]
+                if allies_in_need:
+                    ally_to_heal = max(allies_in_need, key=lambda x: x['life'])
+                    action_id = 3  # Suppose que 3 est l'ID pour SOIN
+                    target_id = ally_to_heal['cid']
+                    self.action = "Soin"
+                    self.reasoning = f"Support. Je soigne l'allié {target_id[:4]}."
                 else:
                     action_id = 0  # HIT
                     self.action = "Attaque"
-                    self.reasoning = f"Aucun allié en danger. J'attaque la cible assignée."
-            elif self.role == "Support":
-                # Le support peut soigner (s'il y a une action de soin) ou attaquer
-                action_id = 0  # HIT
-                self.action = "Attaque"
-                self.reasoning = f"Support. J'attaque la cible assignée."
+                    self.reasoning = f"Support. J'attaque la cible assignée."
             else:
                 action_id = 0  # HIT
                 self.action = "Attaque"
@@ -351,6 +422,10 @@ class BotAgent:
             # Si aucune cible assignée, choisir un ennemi au hasard
             target_enemy = random.choice(enemies)
             target_id = target_enemy['cid']
+
+        # Pour les actions qui nécessitent une cible spécifique
+        if self.role == "Support" and action_id == 3 and allies_in_need:
+            return action_id, target_id
 
         return action_id, target_id
 

@@ -171,6 +171,18 @@ class TestEngineRealAPI(unittest.TestCase):
             for rank, team in enumerate(others_teams, start=4):
                 print(f"#{rank}: Équipe ID: {team['team_id']}, Or Total: {team['gold']:.2f}")
 
+    def verify_all_players_created(self):
+        """Vérifie que tous les joueurs créés sont bien présents dans l'API."""
+        retrieved_players = self.get_all_players()
+        retrieved_player_ids = {player['cid'] for player in retrieved_players}
+        created_player_ids = set(self.players)
+        missing_players = created_player_ids - retrieved_player_ids
+        self.assertTrue(
+            not missing_players,
+            f"Les joueurs suivants n'ont pas été retrouvés lors de la récupération : {missing_players}"
+        )
+        print(f"[INFO] Tous les joueurs créés ont été retrouvés dans l'API.")
+
     # Test Principal
 
     def test_until_last_team_standing(self):
@@ -201,6 +213,9 @@ class TestEngineRealAPI(unittest.TestCase):
                 player_id = self.create_player(player_data)
                 self.players.append(player_id)
         self.round_number = 0
+
+        # Étape 1.1 : Vérifier que tous les joueurs créés sont bien présents
+        self.verify_all_players_created()
 
         # Étape 2 : Continuer jusqu'à ce qu'il ne reste plus qu'une équipe
         while len(self.get_teams()) > 1:
@@ -244,6 +259,9 @@ class TestEngineRealAPI(unittest.TestCase):
 
         # Afficher l'état final des joueurs
         self.display_end_game_status()
+
+        # Étape 4 : Vérifier une nouvelle fois que tous les joueurs créés sont toujours présents
+        self.verify_all_players_created()
 
 if __name__ == '__main__':
     unittest.main()
