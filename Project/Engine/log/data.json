@@ -13,7 +13,8 @@
                 "action": "None",
                 "target": "None",
                 "dead": false,
-                "arena_id": 2
+                "arena_id": 2,
+                "turn_id": 0
             }
         ],
         [
@@ -29,7 +30,8 @@
                 "action": "None",
                 "target": "None",
                 "dead": false,
-                "arena_id": 2
+                "arena_id": 2,
+                "turn_id": 0
             }
         ],
         [
@@ -45,7 +47,8 @@
                 "action": "None",
                 "target": "None",
                 "dead": false,
-                "arena_id": 2
+                "arena_id": 2,
+                "turn_id": 0
             }
         ],
         [
@@ -61,7 +64,8 @@
                 "action": "None",
                 "target": "None",
                 "dead": false,
-                "arena_id": 2
+                "arena_id": 2,
+                "turn_id": 1
             }
         ],
         [
@@ -77,7 +81,8 @@
                 "action": "None",
                 "target": "None",
                 "dead": false,
-                "arena_id": 2
+                "arena_id": 2,
+                "turn_id": 0
             }
         ],
         [
@@ -93,7 +98,8 @@
                 "action": "None",
                 "target": "None",
                 "dead": false,
-                "arena_id": 2
+                "arena_id": 2,
+                "turn_id": 0
             }
         ]
     ],
@@ -179,7 +185,8 @@
                 "action": "2",
                 "target": "None",
                 "dead": false,
-                "arena_id": 2
+                "arena_id": 2,
+                "turn_id": 0
             }
         ],
         [
@@ -192,10 +199,11 @@
                 "strength": 4,
                 "armor": 3,
                 "speed": 3,
-                "action": "3",
+                "action": "2",
                 "target": "None",
                 "dead": false,
-                "arena_id": 2
+                "arena_id": 2,
+                "turn_id": 0
             }
         ],
         [
@@ -211,23 +219,8 @@
                 "action": "2",
                 "target": "None",
                 "dead": false,
-                "arena_id": 2
-            }
-        ],
-        [
-            1732541627.9655418,
-            {
-                "cid": "d3567840-69b3-4f60-ac2e-016cd6f91b81",
-                "teamid": 2,
-                "name": "d3567840-69b3-4f60-ac2e-016cd6f91b81",
-                "life": 9,
-                "strength": 4,
-                "armor": 4,
-                "speed": 1,
-                "action": "0",
-                "target": "None",
-                "dead": false,
-                "arena_id": 2
+                "arena_id": 2,
+                "turn_id": 0
             }
         ],
         [
@@ -243,7 +236,8 @@
                 "action": "2",
                 "target": "None",
                 "dead": false,
-                "arena_id": 2
+                "arena_id": 2,
+                "turn_id": 0
             }
         ],
         [
@@ -259,7 +253,8 @@
                 "action": "0",
                 "target": "None",
                 "dead": false,
-                "arena_id": 2
+                "arena_id": 2,
+                "turn_id": 0
             }
         ],
         [
@@ -275,7 +270,8 @@
                 "action": "0",
                 "target": "04c0316c-42ca-43ea-b55d-823dc63caf8e",
                 "dead": false,
-                "arena_id": 2
+                "arena_id": 2,
+                "turn_id": 1
             }
         ],
         [
@@ -291,7 +287,8 @@
                 "action": "1",
                 "target": "d22d7caa-3862-4422-a57b-a085a32ea228",
                 "dead": false,
-                "arena_id": 2
+                "arena_id": 2,
+                "turn_id": 1
             }
         ],
         [
@@ -304,10 +301,11 @@
                 "strength": 3,
                 "armor": 3,
                 "speed": 1,
-                "action": "2",
+                "action": "3",
                 "target": "d22d7caa-3862-4422-a57b-a085a32ea228",
                 "dead": false,
-                "arena_id": 2
+                "arena_id": 2,
+                "turn_id": 1
             }
         ],
         [
@@ -323,7 +321,8 @@
                 "action": "2",
                 "target": "523ba8cd-8c88-47c6-80fc-cc57d32baf41",
                 "dead": false,
-                "arena_id": 2
+                "arena_id": 2,
+                "turn_id": 1
             }
         ],
         [
@@ -339,7 +338,8 @@
                 "action": "0",
                 "target": "d22d7caa-3862-4422-a57b-a085a32ea228",
                 "dead": false,
-                "arena_id": 2
+                "arena_id": 2,
+                "turn_id": 2
             }
         ],
         [
@@ -355,7 +355,8 @@
                 "action": "0",
                 "target": "d22d7caa-3862-4422-a57b-a085a32ea228",
                 "dead": false,
-                "arena_id": 2
+                "arena_id": 2,
+                "turn_id": 2
             }
         ],
         [
@@ -371,7 +372,8 @@
                 "action": "2",
                 "target": "None",
                 "dead": false,
-                "arena_id": 2
+                "arena_id": 2,
+                "turn_id": 2
             }
         ],
         [
@@ -387,7 +389,8 @@
                 "action": "0",
                 "target": "None",
                 "dead": true,
-                "arena_id": 2
+                "arena_id": 2,
+                "turn_id": 2
             }
         ],
         [
@@ -403,7 +406,8 @@
                 "action": "0",
                 "target": "None",
                 "dead": false,
-                "arena_id": 2
+                "arena_id": 2,
+                "turn_id": 2
             }
         ],
         [

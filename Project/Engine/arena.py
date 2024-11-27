@@ -1,9 +1,10 @@
 from Project.Engine.action import *
 
 class Arena:
-    def __init__(self, data):
+    def __init__(self, data, turn_id):
         self._playersList = []
         self._data = data
+        self._turnId = turn_id
 
     def setActionTo(self, cid, action):
         flag = False
