@@ -7,8 +7,8 @@ import random
 
 # Mapping centralisé des URLs des arènes à leurs arena_id
 ARENA_MAPPING = {
-    "http://10.109.111.31:5000": 1,
-    "http://10.109.111.31:5001": 2,
+    "http://10.109.150.192:6969": 1,
+    "http://10.109.150.75:6969": 2,
     # Ajouter d'autres mappings si nécessaire
 }
 
@@ -47,6 +47,18 @@ class AgentApp:
             self.tree.heading(col, text=col)
             self.tree.column(col, width=150, anchor='center')
         self.tree.pack(fill=tk.BOTH, expand=True)
+
+        # Nouvelle section pour l'état des arènes
+        arenas_frame = ttk.LabelFrame(main_frame, text="État des Arènes")
+        arenas_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+
+        # Tableau pour afficher l'état des arènes
+        arena_columns = ("Arena ID", "Character ID", "Name", "Life")
+        self.arena_tree = ttk.Treeview(arenas_frame, columns=arena_columns, show='headings')
+        for col in arena_columns:
+            self.arena_tree.heading(col, text=col)
+            self.arena_tree.column(col, width=100, anchor='center')
+        self.arena_tree.pack(fill=tk.BOTH, expand=True)
 
         # Section pour les logs
         logs_frame = ttk.LabelFrame(main_frame, text="Logs des Tours")
@@ -222,11 +234,27 @@ class AgentApp:
         except requests.exceptions.RequestException as e:
             print(f"[ERROR] Échec de la récupération des classements: {e}")
 
+    def update_arenas_table(self, all_game_states):
+        # Effacer les données existantes
+        for row in self.arena_tree.get_children():
+            self.arena_tree.delete(row)
+        # Insérer les nouvelles données
+        for arena_url, characters in all_game_states.items():
+            arena_id = ARENA_MAPPING.get(arena_url, "Unknown")
+            for char in characters:
+                self.arena_tree.insert("", "end", values=(
+                    arena_id,
+                    char.get('cid', 'N/A')[:8],  # Afficher les 8 premiers caractères du CID
+                    char.get('name', 'N/A'),
+                    char.get('life', 0)
+                ))
+
     def update_loop(self):
         while True:
             if self.agents:
                 self.update_agents_table()
                 self.update_rankings()
+                # Note: update_arenas_table is called in game_loop after fetching all_game_states
             time.sleep(5)  # Mettre à jour toutes les 5 secondes
 
     def game_loop(self):
@@ -241,6 +269,9 @@ class AgentApp:
                 game_state = self.get_game_state(arena_url)
                 all_game_states[arena_url] = game_state
 
+            # Mettre à jour le tableau des arènes dans le GUI
+            self.update_arenas_table(all_game_states)
+
             for agent in self.agents:
                 if not self.running:
                     break
@@ -249,7 +280,12 @@ class AgentApp:
                     continue
                 action_id, target_id = agent.decide_action(all_game_states, self.agents, self.turn_number)
                 if action_id is not None and target_id is not None:
-                    agent.perform_action(action_id, target_id)
+                    # Déterminer l'arène de la cible pour envoyer l'action à la bonne API
+                    target_arena_url = self.find_arena_by_cid(target_id, all_game_states)
+                    if target_arena_url:
+                        agent.perform_action(action_id, target_id, target_arena_url)
+                    else:
+                        print(f"[WARNING] {agent.bot_name}: Cible {target_id} introuvable dans les arènes.")
                     # Attendre 2 secondes entre chaque envoi d'action
                     time.sleep(2)
                 turn_log["actions"].append({
@@ -261,6 +297,13 @@ class AgentApp:
             self.turn_logs.append(turn_log)
             self.update_logs()
             time.sleep(1)
+
+    def find_arena_by_cid(self, cid, all_game_states):
+        for arena_url, characters in all_game_states.items():
+            for char in characters:
+                if char.get('cid') == cid:
+                    return arena_url
+        return None
 
     def get_game_state(self, arena_url):
         try:
@@ -511,7 +554,7 @@ class BotAgent:
     def get_target(self, targets, enemies):
         if targets and self.cid in targets:
             target_id = targets[self.cid]
-            # Vérifier si la cible est toujours vivante
+            # Vérifier si la cible est toujours vivante et dans une autre équipe
             if any(char.get('cid') == target_id and not char.get('dead', False) for char in enemies):
                 return target_id
         # Si aucune cible assignée ou la cible assignée est morte, choisir un ennemi au hasard
@@ -530,7 +573,7 @@ class BotAgent:
                 return arena_url, arena_id
         return None, None
 
-    def perform_action(self, action_id, target_id):
+    def perform_action(self, action_id, target_id, target_arena_url):
         try:
             if action_id == 3:
                 # Action spéciale pour changer d'arène
@@ -548,8 +591,9 @@ class BotAgent:
                 print(f"[INFO] {self.bot_name} a changé d'arène vers {self.arena_id}.")
             else:
                 # Actions normales (HIT, BLOCK, DODGE)
+                # Envoyer l'action à l'arène appropriée basée sur la cible
                 response = requests.post(
-                    f"{self.arena_url}/character/action/{self.cid}/{action_id}/{target_id}"
+                    f"{target_arena_url}/character/action/{self.cid}/{action_id}/{target_id}"
                 )
                 response.raise_for_status()
                 # Update last_action based on action_id

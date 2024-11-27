@@ -13,8 +13,8 @@ import threading
 routes_blueprint = Blueprint('routes', __name__)
 
 arena_networks = {
-    1: {"arena_network": "10.7.181.219:6969"},
-    2: {"arena_network": "10.7.177.131:6969"}
+    1: {"arena_network": "10.109.111.31:5000"},
+    2: {"arena_network": "10.109.111.31:5001"}
 }
 
 # Initialiser un verrou global si nécessaire (optionnel)
