@@ -49,16 +49,16 @@ class TestEngineRealAPI(unittest.TestCase):
     def get_teams(self):
         """Retourner les équipes actives."""
         current_state = self.get_all_players()
-        teams = set(char['teamid'] for char in current_state if not char['dead'])
+        teams = set(char['team_id'] for char in current_state if not char['dead'])
         return teams
 
     def organize_teams(self, players):
         """Organiser les joueurs par équipe."""
         teams = {}
         for player in players:
-            if player['teamid'] not in teams:
-                teams[player['teamid']] = []
-            teams[player['teamid']].append(player)
+            if player['team_id'] not in teams:
+                teams[player['team_id']] = []
+            teams[player['team_id']].append(player)
         return teams
 
     # Affichages
