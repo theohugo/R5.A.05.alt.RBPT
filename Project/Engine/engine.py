@@ -143,6 +143,7 @@ class Engine:
             for leaver in leavers:
                 self._arena.removePlayer(leaver)
             self._turnId += 1
+            self._arena._turnId += 1
             self._data.addData("turn_id", self._turnId)
 
     def run(self):

@@ -34,10 +34,13 @@ def get_characters():
 
 # GET - récupérer le personnage spécifique - /character/cid
 @routes_blueprint.route('/character/<string:cid>', methods=['GET'])
-def get_character():
+def get_character(cid):
     arena = current_app.engine._arena
     characters = arena._playersList
-    return jsonify({"characters": [char.toDict() for char in characters]}), 200
+    for character in characters :
+        if character.isId(cid):
+            return jsonify({"character": character.toDict() }), 200
+    return jsonify({"error": "Personnage non trouvé"}), 400
 
 # GET - récupérer les résultats des matchs /status/ - numéro de tour
 @routes_blueprint.route('/status/', methods=['GET'])

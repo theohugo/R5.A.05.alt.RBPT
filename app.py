@@ -27,7 +27,7 @@ app.register_blueprint(routes_blueprint)
 
 
 # Kafka configuration
-KAFKA_BROKER = 'localhost:9092'  # Adresse de votre broker Kafka
+KAFKA_BROKER = 'localhost:9092'
 KAFKA_TOPICS = {
     'enter_arena': 'enter_arena_topic',
     'gold': 'gold_topic',

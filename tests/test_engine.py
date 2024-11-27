@@ -188,8 +188,8 @@ class TestEngineRealAPI(unittest.TestCase):
     def test_until_last_team_standing(self):
         """Continuer jusqu'à ce qu'il ne reste plus qu'une équipe."""
         # Étape 1 : Ajouter les players
-        teams = 3
-        players_per_team = 2
+        teams = 6
+        players_per_team = 3
         for team_id in range(1, teams + 1):
             for player_index in range(players_per_team):
                 valid_stats = False
