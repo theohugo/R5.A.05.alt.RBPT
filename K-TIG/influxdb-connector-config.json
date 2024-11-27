@@ -1,0 +1,16 @@
+{
+    "name": "influxdb-sink",
+    "config": {
+      "connector.class": "io.confluent.influxdb.InfluxDBSinkConnector",
+      "tasks.max": "1",
+      "topics": "enter_arena_topic,gold_topic,set_action_topic,damage_topic,death_topic",
+      "influxdb.url": "http://influxdb:8086",
+      "influxdb.database": "kafka_data",
+      "influxdb.retention.policy": "autogen",
+      "influxdb.username": "admin",
+      "influxdb.password": "admin123",
+      "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+      "value.converter": "org.apache.kafka.connect.json.JsonConverter"
+    }
+  }
+  

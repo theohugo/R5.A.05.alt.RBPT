@@ -1,0 +1,102 @@
+services:
+  zookeeper:
+    image: wurstmeister/zookeeper
+    container_name: zookeeper
+    ports:
+      - 2181:2181
+    volumes:
+      - ./volume/zookeeper/:/var/run/docker.sock
+
+  kafka:
+    build: .
+    image: kafka-jxm-prom
+    container_name: kafka
+    links:
+      - zookeeper
+    ports:
+      - 9092:9092
+      - "8082:8082"
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: OUTSIDE://:9092,INSIDE://:9192
+      KAFKA_ADVERTISED_LISTENERS: OUTSIDE://127.0.0.1:9092,INSIDE://kafka:9192
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: OUTSIDE:PLAINTEXT,INSIDE:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+      KAFKA_DELETE_TOPIC_ENABLE: "true"
+      KAFKA_NUM_PARTITIONS: 3
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CREATE_TOPICS: "enter_arena_topic:3:1,gold_topic:3:1,set_action_topic:3:1,damage_topic:3:1,death_topic:3:1"
+      #KAFKA_OPTS: -javaagent:/usr/app/jmx_prometheus_javaagent.jar=8082:/etc/exporter/jmx-exporter-config.yml
+      LOG_DIR: "/tmp/kafka-logs"
+      KAFKA_LOG_LEVEL: DEBUG
+    volumes:
+    - ./volume/kafka/:/var/run/docker.sock
+    - ./init-topics.sh:/usr/bin/init-topics.sh
+    - ./jmx-exporter-config.yml:/etc/exporter/jmx-exporter-config.yml  
+    command: >
+      sh -c "./wait-for-it.sh localhost:9092 --timeout=30 --strict -- /usr/bin/init-topics.sh & start-kafka.sh"
+  
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    ports: 
+      - 9090:9090
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=720h'
+    links:
+      - kafka
+  
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    environment:
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,briangann-gauge-panel,natel-plotly-panel,grafana-simple-json-datasource
+    ports:
+      - 3000:3000
+
+  influxdb:
+    image: influxdb:latest
+    container_name: influxdb
+    restart: always
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_BUCKET=arena-bucket
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=adminpassword
+      - DOCKER_INFLUXDB_INIT_ORG=iut-acy
+    ports:
+      - '8086:8086'
+    volumes:
+      - influxdb_data:/var/lib/influxdb2
+
+  telegraf:
+    image: telegraf
+    container_name: telegraf
+    user: root
+    restart: always
+    entrypoint: /bin/bash -c "chmod 777 /var/run/docker.sock && /entrypoint.sh telegraf"
+    volumes:
+      - ./telegraf.conf:/etc/telegraf/telegraf.conf:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /:/hostfs:ro
+    environment:
+      - HOST_ETC=/hostfs/etc
+      - HOST_PROC=/hostfs/proc
+      - HOST_SYS=/hostfs/sys
+      - HOST_VAR=/hostfs/var
+      - HOST_RUN=/hostfs/run
+      - HOST_MOUNT_PREFIX=/hostfs
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 6
+
+volumes:
+  influxdb_data:
+  grafana_data:

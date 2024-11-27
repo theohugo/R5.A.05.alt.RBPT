@@ -162,7 +162,7 @@ def switch_arena(cid, action_id, arena_id):
             send_to_arena(new_arena_network, dataCharacter.toDict()) 
         except Exception as e:
             return jsonify({"error": f"Impossible de se connecter à l'arène {arena_id} =>{e}"}), 500  
-          
+
         # Store the character's data before removing them
         engine = current_app.engine
         if not hasattr(engine, 'left_players'):
@@ -183,7 +183,8 @@ def switch_arena(cid, action_id, arena_id):
         
     return jsonify({
         "message": f"Personnage '{cid}' a quitté l'arène {current_arena_id} pour aller sur l'arène {arena_id} (IP: {new_arena_network})",
-        "character": dataCharacter.toDict()
+        "character": dataCharacter.toDict(),
+        "new_arena_network": new_arena_network
     }), 200
 
 # POST - /character/action/<cid>/<action>
@@ -294,3 +295,5 @@ def get_team_ranking():
     ranking_data = [{"team_id": team_id, "gold": gold} for team_id, gold in ranking]
 
     return jsonify({"ranking": ranking_data}), 200
+
+
