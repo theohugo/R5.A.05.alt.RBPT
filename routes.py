@@ -7,7 +7,6 @@ from Project.Engine.arena import *
 from Project.Engine.character import *
 from flask import current_app, jsonify, request, Blueprint
 import uuid
-import threading
 
 # Créer un Blueprint pour enregistrer les routes dans app.py
 routes_blueprint = Blueprint('routes', __name__)
@@ -18,7 +17,7 @@ arena_networks = {
 }
 
 # Initialiser un verrou global si nécessaire (optionnel)
-route_lock = threading.Lock()
+# route_lock = threading.Lock()  # Removed the global lock
 
 # GET - dire bonjour
 @routes_blueprint.route('/', methods=['GET'])
@@ -37,9 +36,9 @@ def get_characters():
 def get_character(cid):
     arena = current_app.engine._arena
     characters = arena._playersList
-    for character in characters :
+    for character in characters:
         if character.isId(cid):
-            return jsonify({"character": character.toDict() }), 200
+            return jsonify({"character": character.toDict()}), 200
     return jsonify({"error": "Personnage non trouvé"}), 400
 
 # GET - récupérer les résultats des matchs /status/ - numéro de tour
@@ -161,10 +160,10 @@ def switch_arena(cid, action_id, arena_id):
         
         dataCharacter.setArena(arena_id)     
         
-        try :
+        try:
             send_to_arena(new_arena_network, dataCharacter.toDict()) 
         except Exception as e:
-            return jsonify({"error": f"Impossible de se connecter à l'arène {arena_id} =>{e}"}), 500  
+            return jsonify({"error": f"Impossible de se connecter à l'arène {arena_id} => {e}"}), 500  
 
         # Store the character's data before removing them
         engine = current_app.engine
@@ -190,7 +189,7 @@ def switch_arena(cid, action_id, arena_id):
         "new_arena_network": new_arena_network
     }), 200
 
-# POST - /character/action/<cid>/<action>
+# POST - /character/action/<cid>/<action>/<target_id>
 @routes_blueprint.route('/character/action/<string:cid>/<int:action_id>/<string:target_id>', methods=['POST'])
 def action_arena(cid, action_id, target_id):
     arena = current_app.engine._arena
@@ -220,7 +219,6 @@ def action_arena(cid, action_id, target_id):
     }), 200
 
 def send_to_arena(ip, character_data):
-    
     """
     Sends character data to the target arena network.
 
@@ -243,13 +241,12 @@ def send_to_arena(ip, character_data):
 
     return response
 
-
 @routes_blueprint.route('/ranking/individual/', methods=['GET'])
 def get_individual_ranking():
     engine = current_app.engine
     players = engine._arena._playersList
 
-   # Create a list for ranking data
+    # Create a list for ranking data
     ranking_data = []
 
     # Include current players
@@ -280,7 +277,7 @@ def get_team_ranking():
     players = engine._arena._playersList
     team_gold = {}
 
-     # Accumulate gold for current players
+    # Accumulate gold for current players
     for char in players:
         team_id = char._teamid
         char_gold = engine._goldBook.get(char.getId(), 0)
@@ -296,7 +293,5 @@ def get_team_ranking():
     # Sort teams by total gold
     ranking = sorted(team_gold.items(), key=lambda x: x[1], reverse=True)
     ranking_data = [{"team_id": team_id, "gold": gold} for team_id, gold in ranking]
-
+    
     return jsonify({"ranking": ranking_data}), 200
-
-
