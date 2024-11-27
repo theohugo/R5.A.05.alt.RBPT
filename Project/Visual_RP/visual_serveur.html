@@ -263,8 +263,8 @@
             info.classList.add('character-info');
             
             // Ajout d'une fonction pour attribuer une couleur en fonction de l'équipe
-            const getTeamColor = (teamId) => {
-                switch (teamId) {
+            const getTeamColor = (team_Id) => {
+                switch (team_Id) {
                     case 1: return 'red';    // Par exemple, équipe 1 = rouge
                     case 2: return 'blue';   // Équipe 2 = bleu
                     case 3: return 'green';  // Équipe 3 = vert
@@ -273,10 +273,10 @@
                 }
             };
 
-            const teamColor = getTeamColor(character.teamid); // Couleur basée sur teamid
+            const teamColor = getTeamColor(character.team_id); // Couleur basée sur team_id
 
             // Modifier l'affichage du team avec une couleur dynamique
-            info.innerHTML = `<div>CID: ${character.cid.toString().slice(-4)}</div><div style="color: ${teamColor}">Team: ${character.teamid.toString().slice(-4)}</div>`;
+            info.innerHTML = `<div>CID: ${character.cid.toString().slice(-4)}</div><div style="color: ${teamColor}">Team: ${character.team_id.toString().slice(-4)}</div>`;
 
             const initialLife = character.life;
 
@@ -501,8 +501,8 @@
             };
 
             // Application de la couleur dynamique au champ Team
-            const teamColor = getTeamColor(character.teamid);
-            info.innerHTML = `<div>CID: ${character.cid.toString().slice(-4)}</div><div style="color: ${teamColor}">Team: ${character.teamid.toString().slice(-4)}</div>`;
+            const teamColor = getTeamColor(character.team_id);
+            info.innerHTML = `<div>CID: ${character.cid.toString().slice(-4)}</div><div style="color: ${teamColor}">Team: ${character.team_id.toString().slice(-4)}</div>`;
 
             const initialLife = character.life;
 
@@ -679,7 +679,7 @@
                       return (damageEntry[1].character === cid && damageEntry[1].target === targetCid);
                     });
                     console.log(damageData);
-
+                    isdead = false
                     if (damageData) {
                       const { damage, reduced, dodged } = damageData[1];
                       // Afficher les dégâts
