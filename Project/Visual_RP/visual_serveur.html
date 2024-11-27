@@ -400,12 +400,38 @@
         }, delay);
       }
 
-      // Fonction pour retirer un personnage de l'arène
       function retirerPersonnage(character) {
-        // Vérifier si le personnage existe
-        const charContainer = character.element;
-        //suprimer
-        charContainer.remove();
+        // Vérifier si le personnage existe dans le conteneur
+        if (charContainers[character.character.cid]) {
+          // Supprimer l'élément DOM
+          const charContainer = charContainers[character.character.cid].element;
+          charContainer.remove();
+
+          // Retirer du tableau des conteneurs
+          delete charContainers[character.character.cid];
+
+          // Recalculer le placement des personnages restants
+          recalculerPositions();
+        }
+      }
+
+      function recalculerPositions() {
+        const charactersRestants = Object.values(charContainers).map(data => data.character);
+        const angleStep = (2 * Math.PI) / charactersRestants.length; // Recalculer l'angle pour les nouveaux personnages
+
+        charactersRestants.forEach((character, index) => {
+          const angle = angleStep * index;
+          const x = centerX + radius * Math.cos(angle) - 32;
+          const y = centerY + radius * Math.sin(angle) - 32;
+
+          // Mettre à jour la position dans le DOM
+          const charContainer = charContainers[character.cid].element;
+          charContainer.style.left = `${x}px`;
+          charContainer.style.top = `${y}px`;
+
+          // Mettre à jour la position dans charContainers
+          charContainers[character.cid].position = { x, y };
+        });
       }
 
       // Fonction pour vérifier si un personnage est mort

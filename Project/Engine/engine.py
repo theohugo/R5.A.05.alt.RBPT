@@ -44,7 +44,13 @@ class Engine:
             self._ipMap[cId] = ip
             if not cId in self._goldBook:
                 self._goldBook[cId] = 0
-            self._data.addData("enter_arena", character.toDict())
+
+            # Ajout du turnId dans les données de l'entrée dans l'arène
+            enter_arena_data = character.toDict()
+            enter_arena_data["turn_id"] = self._turnId
+            
+            # Ajout des données au journal
+            self._data.addData("enter_arena", enter_arena_data)
             self._data.addData("gold", {cId: self._goldBook[cId]})
 
     def getIP(self, cid):
