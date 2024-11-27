@@ -167,7 +167,7 @@
 
     // Fonction pour charger le fichier JSON
     function loadData() {
-      fetch('../Engine/log/data.json')  // Charge le fichier JSON 
+      fetch('../Engine/log/data_demo.json')  // Charge le fichier JSON 
         .then(response => {
           if (!response.ok) {
             throw new Error('Erreur lors de la récupération du fichier JSON');
@@ -273,10 +273,10 @@
                 }
             };
 
-            const teamColor = getTeamColor(character.team_id); // Couleur basée sur team_id
+            const teamColor = getTeamColor(character.teamid); // Couleur basée sur team_id
 
             // Modifier l'affichage du team avec une couleur dynamique
-            info.innerHTML = `<div>CID: ${character.cid.toString().slice(-4)}</div><div style="color: ${teamColor}">Team: ${character.team_id.toString().slice(-4)}</div>`;
+            info.innerHTML = `<div>CID: ${character.cid.toString().slice(-4)}</div><div style="color: ${teamColor}">Team: ${character.teamid.toString().slice(-4)}</div>`;
 
             const initialLife = character.life;
 
