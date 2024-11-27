@@ -17,7 +17,7 @@ class Engine:
         self._data = Data()
         # State of the arena and characters' characteristics at each round
         self._history = {}
-        self._arena = Arena(self._data)
+        self._arena = Arena(self._data, self._turnId)
         self._run = False
         self._goldBook = {}
         self._ipMap = {}

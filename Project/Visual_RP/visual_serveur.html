@@ -227,8 +227,11 @@
     // Fonction pour positionner les personnages dans l'arène
     function positionnerPersonnages(data, allData) {
       const arena = document.getElementById('arena');
-      const characters = data.map(([timestamp, character]) => character);  // Mapping des personnages
-      const numCharacters = characters.length;
+      const initialCharacters = data
+        .map(([timestamp, character]) => character) // Extraire les personnages
+        .filter(character => character.turn_id === 0);
+      const characters = data.map(([timestamp, character]) => character)
+      const numCharacters = initialCharacters.length;
       const centerX = arena.offsetWidth / 2;
       const centerY = arena.offsetHeight / 2;
       const radius = 200;
@@ -236,68 +239,98 @@
 
       const charContainers = {};
 
-      characters.forEach((character, index) => {
-        const angle = angleStep * index;
-        const x = centerX + radius * Math.cos(angle) - 32;
-        const y = centerY + radius * Math.sin(angle) - 32;
-
-        const charContainer = document.createElement('div');
-        charContainer.classList.add('character-container');
-        charContainer.style.left = `${x}px`;
-        charContainer.style.top = `${y}px`;
-
-        const img = document.createElement('img');
-        img.src = getImageForCharacter(character);
-
-        const info = document.createElement('div');
-        info.classList.add('character-info');
-        info.innerHTML = `<div>CID: ${character.cid.toString().slice(-4)}</div><div>Team: ${character.teamid.toString().slice(-4)}</div>`;
-
-        const initialLife = character.life;
-
-        const healthBar = document.createElement('div');
-        healthBar.classList.add('health-bar');
-        healthBar.appendChild(createHealthBar(character.life, initialLife));
-
-        const statsElement = document.createElement('div');
-        statsElement.classList.add('stats');
-        statsElement.innerHTML =  
-          `<div class="stat-item">
-            <div class="icon icon-health"></div>
-            <span>${character.life}</span>
-          </div>
-          <div class="stat-item">
-            <div class="icon icon-strength"></div>
-            <span>${character.strength}</span>
-          </div>
-          <div class="stat-item">
-            <div class="icon icon-armor"></div>
-            <span>${character.armor}</span>
-          </div>
-          <div class="stat-item">
-            <div class="icon icon-speed"></div>
-            <span>${character.speed}</span>
-          </div>`;
-
-        charContainer.appendChild(img);
-        charContainer.appendChild(info);
-        charContainer.appendChild(healthBar);
-        charContainer.appendChild(statsElement);
-
-        arena.appendChild(charContainer);
-
-        healthBar.style.top = '-120px';
-        statsElement.style.left = '70px';
-        statsElement.style.top = '0px';
-
-        charContainers[character.cid] = { 
-          element: charContainer, 
-          position: { x, y },
-          character: character,
-          healthBar: healthBar, 
-          initialLife: initialLife // Ajouter la vie initiale
-        };
+      const cidsAndTurnIds = [];
+      characters.forEach((character) => {
+        cidsAndTurnIds.push({ cid: character.cid, turn_id: character.turn_id, inArena: false, personnage: character });
       });
+
+      initialCharacters.forEach((character, index) => {
+        // Vérifiez si le turn_id est égal à 0 avant de placer le personnage
+        if (character.turn_id === 0) {
+            const angle = angleStep * index;
+            const x = centerX + radius * Math.cos(angle) - 32;
+            const y = centerY + radius * Math.sin(angle) - 32;
+
+            const charContainer = document.createElement('div');
+            charContainer.classList.add('character-container');
+            charContainer.style.left = `${x}px`;
+            charContainer.style.top = `${y}px`;
+
+            const img = document.createElement('img');
+            img.src = getImageForCharacter(character);
+
+            const info = document.createElement('div');
+            info.classList.add('character-info');
+            
+            // Ajout d'une fonction pour attribuer une couleur en fonction de l'équipe
+            const getTeamColor = (teamId) => {
+                switch (teamId) {
+                    case 1: return 'red';    // Par exemple, équipe 1 = rouge
+                    case 2: return 'blue';   // Équipe 2 = bleu
+                    case 3: return 'green';  // Équipe 3 = vert
+                    case 4: return 'yellow'; // Équipe 4 = jaune
+                    default: return 'gray';  // Valeur par défaut pour d'autres équipes
+                }
+            };
+
+            const teamColor = getTeamColor(character.teamid); // Couleur basée sur teamid
+
+            // Modifier l'affichage du team avec une couleur dynamique
+            info.innerHTML = `<div>CID: ${character.cid.toString().slice(-4)}</div><div style="color: ${teamColor}">Team: ${character.teamid.toString().slice(-4)}</div>`;
+
+            const initialLife = character.life;
+
+            const healthBar = document.createElement('div');
+            healthBar.classList.add('health-bar');
+            healthBar.appendChild(createHealthBar(character.life, initialLife));
+
+            const statsElement = document.createElement('div');
+            statsElement.classList.add('stats');
+            statsElement.innerHTML =  
+                `<div class="stat-item">
+                    <div class="icon icon-health"></div>
+                    <span>${character.life}</span>
+                </div>
+                <div class="stat-item">
+                    <div class="icon icon-strength"></div>
+                    <span>${character.strength}</span>
+                </div>
+                <div class="stat-item">
+                    <div class="icon icon-armor"></div>
+                    <span>${character.armor}</span>
+                </div>
+                <div class="stat-item">
+                    <div class="icon icon-speed"></div>
+                    <span>${character.speed}</span>
+                </div>`;
+
+            charContainer.appendChild(img);
+            charContainer.appendChild(info);
+            charContainer.appendChild(healthBar);
+            charContainer.appendChild(statsElement);
+
+            arena.appendChild(charContainer);
+
+            healthBar.style.top = '-120px';
+            statsElement.style.left = '70px';
+            statsElement.style.top = '0px';
+
+            charContainers[character.cid] = { 
+                element: charContainer, 
+                position: { x, y },
+                character: character,
+                healthBar: healthBar, 
+                initialLife: initialLife // Ajouter la vie initiale
+            };
+
+            // Mise à jour de inArena dans cidsAndTurnIds pour ce personnage
+            const characterIndex = cidsAndTurnIds.findIndex(item => item.cid === character.cid);
+            if (characterIndex !== -1) {
+                cidsAndTurnIds[characterIndex].inArena = true;
+            }
+          }
+      });
+
 
       // Fonction pour afficher un bouclier semi-transparent pendant la défense
       function displayShield(character) {
@@ -434,6 +467,104 @@
         });
       }
 
+      function ajouterPersonnage(character) {
+        // Vérifier si le personnage existe déjà dans le conteneur
+        if (!charContainers[character.cid]) {
+            // Calculer la nouvelle position basée sur l'angle actuel
+            const charactersRestants = Object.values(charContainers).map(data => data.character);
+            const angleStep = (2 * Math.PI) / (charactersRestants.length + 1); // Ajouter 1 pour le nouveau personnage
+            const angle = angleStep * charactersRestants.length;
+            const x = centerX + radius * Math.cos(angle) - 32;
+            const y = centerY + radius * Math.sin(angle) - 32;
+
+            // Créer le conteneur du personnage
+            const charContainer = document.createElement('div');
+            charContainer.classList.add('character-container');
+            charContainer.style.left = `${x}px`;
+            charContainer.style.top = `${y}px`;
+
+            const img = document.createElement('img');
+            img.src = getImageForCharacter(character);
+
+            const info = document.createElement('div');
+            info.classList.add('character-info');
+            
+            // Fonction pour définir la couleur de l'équipe
+            const getTeamColor = (teamId) => {
+                switch (teamId) {
+                    case 1: return 'red';    // Par exemple, équipe 1 = rouge
+                    case 2: return 'blue';   // Équipe 2 = bleu
+                    case 3: return 'green';  // Équipe 3 = vert
+                    case 4: return 'yellow'; // Équipe 4 = jaune
+                    default: return 'gray';  // Valeur par défaut pour d'autres équipes
+                }
+            };
+
+            // Application de la couleur dynamique au champ Team
+            const teamColor = getTeamColor(character.teamid);
+            info.innerHTML = `<div>CID: ${character.cid.toString().slice(-4)}</div><div style="color: ${teamColor}">Team: ${character.teamid.toString().slice(-4)}</div>`;
+
+            const initialLife = character.life;
+
+            const healthBar = document.createElement('div');
+            healthBar.classList.add('health-bar');
+            healthBar.appendChild(createHealthBar(character.life, initialLife));
+
+            const statsElement = document.createElement('div');
+            statsElement.classList.add('stats');
+            statsElement.innerHTML =  
+                `<div class="stat-item">
+                    <div class="icon icon-health"></div>
+                    <span>${character.life}</span>
+                </div>
+                <div class="stat-item">
+                    <div class="icon icon-strength"></div>
+                    <span>${character.strength}</span>
+                </div>
+                <div class="stat-item">
+                    <div class="icon icon-armor"></div>
+                    <span>${character.armor}</span>
+                </div>
+                <div class="stat-item">
+                    <div class="icon icon-speed"></div>
+                    <span>${character.speed}</span>
+                </div>`;
+
+            // Ajouter les éléments au conteneur du personnage
+            charContainer.appendChild(img);
+            charContainer.appendChild(info);
+            charContainer.appendChild(healthBar);
+            charContainer.appendChild(statsElement);
+
+            // Ajouter le conteneur à l'arène
+            arena.appendChild(charContainer);
+
+            healthBar.style.top = '-120px';
+            statsElement.style.left = '70px';
+            statsElement.style.top = '0px';
+
+            // Ajouter le personnage au tableau des conteneurs
+            charContainers[character.cid] = { 
+                element: charContainer, 
+                position: { x, y },
+                character: character,
+                healthBar: healthBar, 
+                initialLife: initialLife
+            };
+
+            // Mettre à jour inArena pour ce personnage
+            const characterIndex = cidsAndTurnIds.findIndex(item => item.cid === character.cid);
+            if (characterIndex !== -1) {
+                cidsAndTurnIds[characterIndex].inArena = true;
+            }
+
+            // Recalculer les positions des autres personnages
+            recalculerPositions();
+          }
+        }
+
+
+
       // Fonction pour vérifier si un personnage est mort
       function checkIfCharacterIsDead(targetCharacter, deathData) {
         // Chercher dans le tableau des morts si le personnage est dans la liste des tués
@@ -468,11 +599,33 @@
           fleche.style.transform = 'translate(-50%, -50%) scale(1)';  // Augmenter la taille à sa taille finale
         }, 10); // Légère attente pour que la transition soit bien appliquée
 
+        // // Après l'animation, retirer le personnage de l'arène et de charContainers
+        // setTimeout(() => {
+        //     // Retirer le personnage du DOM
+        //     charContainer.remove();
+
+        //     // Supprimer le personnage de charContainers
+        //     delete charContainers[character.character.cid];
+
+        //     // Recalculer les positions des autres personnages
+        //     recalculerPositions();
+        // }, 1000);  // Attendre que l'animation de la flèche soit terminée (1 seconde)
+
       }
+
+      function updatePersonnage(turn_id) {
+        cidsAndTurnIds.forEach((personnage) => {
+            if ((personnage.turn_id === turn_id) && (personnage.inArena === false)) {
+                console.log(personnage); // Affiche le personnage si le turn_id correspond
+                ajouterPersonnage(personnage.personnage)
+            }
+        });
+      }
+
 
       async function updateActions() {
         displayRound(1)
-        const N = allData.enter_arena.length; // Nombre de joueurs par bloc
+        let N = Object.keys(charContainers).length; //allData.enter_arena.length; // Nombre de joueurs par bloc
         let actionsCount = 0;
         let currentTurn = 1;
 
@@ -506,6 +659,8 @@
             console.log(actionData);
 
             const character = charContainers[cid];
+            console.log(charContainers);
+
             if (character) {
               // Récupérer la cible depuis set_target
               const targetCid = allData.set_target.find(target => target[1].cid === cid)?.[1].target;
@@ -557,11 +712,15 @@
                   console.log(actionData.cid + ' ne fait rien');
                   break;
               }
+              //verifi si entré d'un joueur
+              updatePersonnage(actionData.turn_id) //character.character.turn_id)
             }
 
             actionsCount++; // Incrémenter le compteur d'actions après chaque action
 
             console.log(actionsCount  + " / " + N);
+
+            N = Object.keys(charContainers).length;
             
             if (actionsCount === N) {
               currentTurn++;
@@ -581,6 +740,7 @@
                   removeShield(character);
                   removeEsquive(character);
               });
+
               await new Promise(resolve => setTimeout(resolve, 1000));
             }
 
