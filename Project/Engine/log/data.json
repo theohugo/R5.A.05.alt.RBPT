@@ -192,7 +192,7 @@
                 "strength": 4,
                 "armor": 3,
                 "speed": 3,
-                "action": "1",
+                "action": "3",
                 "target": "None",
                 "dead": false,
                 "arena_id": 2

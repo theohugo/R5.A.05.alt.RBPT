@@ -21,7 +21,11 @@ class Arena:
                 elif action == 3:
                     character.setAction(ACTION.FLY)
                     flag = True
-                self._data.addData("set_action", character.toDict())
+                    
+                action_data = character.toDict()
+                action_data["turn_id"] = self._turnId
+                
+                self._data.addData("set_action", action_data)
         return flag
 
     def setTargetTo(self, cid, target):
